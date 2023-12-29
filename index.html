@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gold Ingots Calculator</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>Gold Ingots Calculator</h1>
+      </header>
+
+      <main>
+        <div id="unitPrices">
+          <p>Unit Price (Buy): <span id="unitBuyValue"></span> EGP</p>
+          <p>Unit Price (Sell): <span id="unitSellValue"></span> EGP</p>
+        </div>
+
+        <label for="weight">Enter Weight (grams): </label>
+        <input type="number" id="weight" placeholder="Enter weight in grams" />
+
+        <button onclick="calculate()">Calculate</button>
+
+        <!-- Loading Indicator -->
+        <div id="loadingIndicator" style="display: none">Loading...</div>
+
+        <div id="result">
+          <p>Buy: <span id="buyValue"></span></p>
+          <p>Sell: <span id="sellValue"></span></p>
+        </div>
+      </main>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
