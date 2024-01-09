@@ -92,8 +92,8 @@ function calculate() {
   const weight = document.getElementById("weight").value;
 
   // Simple calculation based on the original prices
-  const buyValue = parseFloat(weight) * originalBuyPrice;
-  const sellValue = parseFloat(weight) * originalSellPrice;
+  const buyValue = parseFloat(weight) * (originalBuyPrice + 48);
+  const sellValue = parseFloat(weight) * (originalSellPrice + 23);
 
   // Format the values using Intl.NumberFormat
   const formatter = new Intl.NumberFormat("en-US", {
