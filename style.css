@@ -1,12 +1,17 @@
 body {
+  position: relative;
+  overflow-x: auto;
+  overflow-y: auto;
+  scroll-behavior: auto;
+  padding-bottom: 30%;
+
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   background-color: #f9f9f9;
-  margin: 0;
+  margin: 20;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
 }
 
 .container {
