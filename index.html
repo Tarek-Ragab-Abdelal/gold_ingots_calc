@@ -13,9 +13,28 @@
       </header>
 
       <main>
+        <!-- Loading Indicator -->
+        <div id="loadingIndicator" style="display: none">Loading...</div>
+
+        <!-- Display Unit Prices -->
         <div id="unitPrices">
-          <p>Unit Price (Buy): <span id="unitBuyValue"></span> EGP</p>
-          <p>Unit Price (Sell): <span id="unitSellValue"></span> EGP</p>
+          <div class="unit-card">
+            <h2>21K per Gram</h2>
+            <p>Buy: <span id="unitBuyValue_21"></span></p>
+            <p>Sell: <span id="unitSellValue_21"></span></p>
+          </div>
+
+          <div class="unit-card">
+            <h2>24K per Gram</h2>
+            <p>Buy: <span id="unitBuyValue_24"></span></p>
+            <p>Sell: <span id="unitSellValue_24"></span></p>
+          </div>
+        </div>
+
+        <!-- Display last updated information -->
+        <div>
+          <div id="lastUpdated" class="centered-text"></div>
+          <button onclick="fetchPrices()">Update Prices</button>
         </div>
 
         <label for="weight">Enter Weight (grams): </label>
@@ -23,12 +42,12 @@
 
         <button onclick="calculate()">Calculate</button>
 
-        <!-- Loading Indicator -->
-        <div id="loadingIndicator" style="display: none">Loading...</div>
-
-        <div id="result">
-          <p>Buy: <span id="buyValue"></span></p>
-          <p>Sell: <span id="sellValue"></span></p>
+        <div id="result" class="centered-text">
+          <p>Results</p>
+          <div class="results-card">
+            <p>Buy: <span id="buyValue"></span></p>
+            <p>Sell: <span id="sellValue"></span></p>
+          </div>
         </div>
       </main>
     </div>

@@ -1,9 +1,17 @@
 // Global variables to store prices
 let buyPrice = 0;
 let sellPrice = 0;
-
 let originalBuyPrice = 0;
 let originalSellPrice = 0;
+
+// Elements for displaying prices and last updated information
+const buyValueElement = document.getElementById("buyValue");
+const sellValueElement = document.getElementById("sellValue");
+const unitBuyValue_24Element = document.getElementById("unitBuyValue_24");
+const unitSellValue_24Element = document.getElementById("unitSellValue_24");
+const unitBuyValue_21Element = document.getElementById("unitBuyValue_21");
+const unitSellValue_21Element = document.getElementById("unitSellValue_21");
+const lastUpdatedElement = document.getElementById("lastUpdated");
 
 // Fetch prices on page load
 window.addEventListener("load", () => {
@@ -13,8 +21,6 @@ window.addEventListener("load", () => {
 const loadingIndicator = document.getElementById("loadingIndicator");
 const calculateButton = document.querySelector("button");
 const weightInput = document.getElementById("weight");
-const buyValueElement = document.getElementById("buyValue");
-const sellValueElement = document.getElementById("sellValue");
 
 async function fetchPrices() {
   try {
@@ -49,12 +55,26 @@ async function fetchPrices() {
       if (targetPrice) {
         originalBuyPrice = targetPrice.ask;
         originalSellPrice = targetPrice.bid;
-        document.getElementById("unitBuyValue").innerText = originalBuyPrice;
-        document.getElementById("unitSellValue").innerText = originalSellPrice;
+        unitBuyValue_24Element.innerText = originalBuyPrice.toFixed(2) + " EGP";
+        unitSellValue_24Element.innerText =
+          originalSellPrice.toFixed(2) + " EGP";
+
+        unitBuyValue_21Element.innerText =
+          (originalBuyPrice * (21 / 24)).toFixed(2) + " EGP";
+        unitSellValue_21Element.innerText =
+          (originalSellPrice * (21 / 24)).toFixed(2) + " EGP";
 
         // Update the UI with the calculated buy and sell prices
         buyValueElement.textContent = originalBuyPrice.toFixed(2) + " EGP";
         sellValueElement.textContent = originalSellPrice.toFixed(2) + " EGP";
+
+        // Display last updated date and time
+        const updatedDate = data?.data?.obj?.updated_date;
+        const updatedTime = data?.data?.obj?.updated_time;
+        if (updatedDate && updatedTime) {
+          lastUpdatedElement.textContent =
+            "Last Updated: " + updatedDate + " " + updatedTime;
+        }
       } else {
         throw new Error("Gold price data not found");
       }
@@ -71,6 +91,7 @@ async function fetchPrices() {
   }
 }
 
+// Modify the calculate function to check if prices are available before calculating
 function calculate() {
   // Check if prices are available
   const buyValueText = buyValueElement.textContent.trim();
@@ -103,17 +124,6 @@ function calculate() {
   });
 
   // Display the formatted values
-  document.getElementById("buyValue").innerText = formatter.format(buyValue);
-  document.getElementById("sellValue").innerText = formatter.format(sellValue);
-}
-
-function findGoldPrice(prices, targetEntity) {
-  if (prices && prices.length > 0) {
-    for (const price of prices) {
-      if (price?.name === targetEntity) {
-        return price;
-      }
-    }
-  }
-  return null;
+  buyValueElement.innerText = formatter.format(buyValue);
+  sellValueElement.innerText = formatter.format(sellValue);
 }

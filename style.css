@@ -1,6 +1,6 @@
 body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f4f4f4;
+  background-color: #f9f9f9;
   margin: 0;
   display: flex;
   flex-direction: column;
@@ -16,6 +16,7 @@ body {
 
 header {
   text-align: center;
+  margin-bottom: 20px;
 }
 
 h1 {
@@ -25,13 +26,18 @@ h1 {
 main {
   background-color: #fff;
   padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
   margin-top: 20px;
 }
 
+.label-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 label {
-  margin: 10px 0;
   font-size: 1.2em;
 }
 
@@ -46,28 +52,41 @@ input {
 button {
   width: 100%;
   padding: 12px;
+  margin-top: 10px;
   cursor: pointer;
-  background-color: #4caf50;
+  background-color: #046307;
   color: #fff;
   border: none;
   border-radius: 5px;
   font-size: 1.2em;
 }
 
-/* Inactive state styles for the button */
-button:disabled {
-  background-color: #ccc;
-  color: #666;
-  cursor: not-allowed;
-}
-
-button:enabled:hover {
-  background-color: #45a049;
+.centered-text {
+  text-align: center;
 }
 
 #unitPrices {
+  text-align: center;
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: space-evenly;
+}
+
+.unit-card {
+  flex: 0 1 calc(48% - 10px);
+  flex: 1;
   margin-bottom: 20px;
-  font-size: 1.2em;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  margin: 5px;
+}
+
+#unitPrices h2 {
+  color: #333;
 }
 
 #unitPrices span {
@@ -80,8 +99,23 @@ button:enabled:hover {
 }
 
 #result {
-  margin-top: 20px;
+  margin-top: 10px;
   font-size: 1.2em;
+}
+
+.results-card {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.results-card p {
+  flex: 1;
+  margin: 5px;
 }
 
 span {
@@ -91,11 +125,10 @@ span {
 
 /* Media Query for Mobile Devices */
 @media only screen and (max-width: 600px) {
-  body {
-    margin: 10px;
+  .unit-card {
+    flex: 1;
   }
-
-  main {
-    padding: 15px;
+  .results-card {
+    flex-wrap: wrap;
   }
 }
