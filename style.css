@@ -130,10 +130,26 @@ span {
 
 /* Media Query for Mobile Devices */
 @media only screen and (max-width: 600px) {
+  body {
+    font-size: 0.8em;
+  }
+  button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 8px;
+    font-size: 1.1em;
+  }
   .unit-card {
     flex: 1;
+    padding: 10px;
   }
   .results-card {
     flex-wrap: wrap;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  .results-card p {
+    flex: 1;
+    margin: 10px;
   }
 }
