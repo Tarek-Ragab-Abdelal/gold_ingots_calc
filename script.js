@@ -454,7 +454,7 @@ class GoldCalculatorApp {
     if (rounding === '1') return Math.round(floatVal);
     const step = parseFloat(rounding);
     if (!isNaN(step) && step > 0) {
-      return Math.round((floatVal + Number.EPSILON) / step) * step;
+      return Math.floor(floatVal / step) * step; // Round down to the nearest step
     }
     return floatVal;
   }
