@@ -31,7 +31,7 @@ async function fetchPrices() {
 
     // Fetch prices from the API
     const response = await fetch(
-      "https://btcegyptgold.com/wp-admin/admin-ajax.php",
+      "https://bulliontradingcenter.com/wp-admin/admin-ajax.php",
       {
         method: "POST",
         headers: {
