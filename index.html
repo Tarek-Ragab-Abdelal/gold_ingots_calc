@@ -1,71 +1,224 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <meta name="description" content="Professional gold price calculator with real-time prices and Arabic support">
+    <meta name="keywords" content="gold, calculator, prices, BTC, Egypt, Arabic">
+    <meta name="theme-color" content="#D4AF37">
+    
+    <!-- Icons -->
     <link rel="icon" href="./logo.png" sizes="32x32" />
-    <title>BTC Gold Ingots Calculator</title>
+    <link rel="apple-touch-icon" href="./logo.png">
+    
+    <title>BTC Gold Calculator | حاسبة الذهب</title>
     <link rel="stylesheet" href="style.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
   </head>
   <body>
     <div class="container">
-      <header>
-        <h2>BTC Ingots Calculator</h2>
+
+      <header class="app-header">
+        <div class="title-row">
+          <div class="title-left">
+            <h1 data-en="BTC Gold Calculator" data-ar="حاسبة الذهب BTC">BTC Gold Calculator</h1>
+            <p class="subtitle" data-en="Quick gold value & conversion — Egypt (EGP)" data-ar="حاسب الذهب السريع — مصر (ج.م)">Quick gold value & conversion — Egypt (EGP)</p>
+          </div>
+          <div class="title-actions">
+            <button id="languageToggle" class="icon-btn" title="تبديل اللغة">
+              <i class="fas fa-language"></i>
+            </button>
+            <button id="themeToggle" class="icon-btn" title="تبديل المظهر">
+              <i class="fas fa-moon"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Compact Market Overview - mobile friendly -->
+        <div class="market-overview compact" aria-live="polite">
+          <!-- Cards will be filled dynamically (21K & 24K emphasized) -->
+          <div class="price-card" id="card21k">
+            <div class="card-left">
+              <div class="card-title" data-en="21K Gold" data-ar="ذهب ٢١ قيراط">21K Gold</div>
+              <div class="card-sub" data-en="EGP / g" data-ar="ج.م / جرام">EGP / g</div>
+            </div>
+            <div class="card-right">
+              <div class="price-buy" title="Buy (you pay)">--</div>
+              <div class="price-sell" title="Sell (you get)">--</div>
+            </div>
+          </div>
+
+          <div class="price-card" id="card24k">
+            <div class="card-left">
+              <div class="card-title" data-en="24K Gold" data-ar="ذهب ٢٤ قيراط">24K Gold</div>
+              <div class="card-sub" data-en="EGP / g" data-ar="ج.م / جرام">EGP / g</div>
+            </div>
+            <div class="card-right">
+              <div class="price-buy">--</div>
+              <div class="price-sell">--</div>
+            </div>
+          </div>
+
+          <div class="small-meta" id="lastUpdatedContainer">
+            <small id="lastUpdated"></small>
+          </div>
+        </div>
       </header>
 
       <main>
         <!-- Loading Indicator -->
-        <div id="loadingIndicator" style="display: none">Loading...</div>
+        <div id="loadingIndicator" class="loading-overlay">
+          <div class="spinner"></div>
+          <p data-en="Loading prices..." data-ar="جاري تحميل الأسعار...">Loading prices...</p>
+        </div>
 
-        <!-- Display Unit Prices -->
-        <div id="unitPrices">
-          <div class="unit-card">
-            <h4>21K / Gram</h4>
-            <p>Buy: <span id="unitBuyValue_21"></span></p>
-            <p>Sell: <span id="unitSellValue_21"></span></p>
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+          <button id="refreshBtn" class="action-btn primary">
+            <i class="fas fa-sync-alt"></i>
+            <span data-en="Refresh Prices" data-ar="تحديث الأسعار">Refresh Prices</span>
+          </button>
+
+          <button id="historyBtn" class="action-btn">
+            <i class="fas fa-history"></i>
+            <span data-en="History" data-ar="التاريخ">History</span>
+          </button>
+
+          <button id="shareBtn" class="action-btn">
+            <i class="fas fa-share-alt"></i>
+            <span data-en="Share" data-ar="مشاركة">Share</span>
+          </button>
+        </div>
+
+        <!-- Calculator Section (mobile-first, feature rich) -->
+        <section class="calculator-section">
+          <h2 data-en="Gold Savings Calculator" data-ar="حاسبة مدخرات الذهب">Gold Savings Calculator</h2>
+
+          <div class="calculator-grid">
+            <div class="input-group">
+              <label for="selectedProduct" data-en="Select Product" data-ar="اختر المنتج">Select Product</label>
+              <select id="selectedProduct" aria-label="Select gold product">
+                <option value="" data-en="Choose a product..." data-ar="اختر منتج...">Choose a product...</option>
+              </select>
+            </div>
+
+            <div class="calc-type">
+              <label data-en="Calculation Type" data-ar="نوع العملية">Calculation Type</label>
+              <div class="radio-group">
+                <label class="radio-label">
+                  <input type="radio" name="calcType" value="goldToMoney" checked>
+                  <span data-en="Gold to Money" data-ar="الذهب إلى نقود">Gold to Money</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="calcType" value="moneyToGold">
+                  <span data-en="Money to Gold" data-ar="النقود إلى ذهب">Money to Gold</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Gold to Money inputs -->
+            <div id="goldToMoneyInputs" class="input-row">
+              <div class="input-group">
+                <label for="quantity" data-en="Quantity / Pieces" data-ar="الكمية / القطع">Quantity / Pieces</label>
+                <input type="number" id="quantity" min="1" value="1" placeholder="1" inputmode="numeric">
+              </div>
+
+              <div class="input-group">
+                <label for="weightPerPiece" data-en="Weight per piece (g)" data-ar="وزن القطعة (جرام)">Weight per piece (g)</label>
+                <input type="number" id="weightPerPiece" min="0" step="0.01" value="" placeholder="Auto for ingots">
+              </div>
+            </div>
+
+            <!-- Money to Gold inputs -->
+            <div id="moneyToGoldInputs" class="input-row" style="display:none;">
+              <div class="input-group">
+                <label for="moneyAmount" data-en="Money Amount (EGP)" data-ar="المبلغ (ج.م)">Money Amount (EGP)</label>
+                <input type="number" id="moneyAmount" min="0" step="0.01" placeholder="0.00" inputmode="decimal">
+              </div>
+
+              <div class="input-group">
+                <label for="minPieceSize" data-en="Prefer whole pieces? (min size)" data-ar="تفضيل قطع كاملة؟">Prefer whole pieces?</label>
+                <select id="minPieceSize">
+                  <option value="pieces" data-en="Whole pieces (e.g., ingots/coins)" data-ar="قطع كاملة (سبائك/عملات)">Whole pieces</option>
+                  <option value="grams" data-en="Allow grams (fractional)" data-ar="السماح بالجرامات">Allow grams</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Fees and options -->
+            <div class="input-row small-gap">
+              <div class="input-group">
+                <label for="feePercent" data-en="Fee (%)" data-ar="رسوم (%)">Fee (%)</label>
+                <input type="number" id="feePercent" min="0" step="0.01" placeholder="0.00" value="0">
+              </div>
+
+              <div class="input-group">
+                <label for="rounding" data-en="Rounding" data-ar="التقريب">Rounding</label>
+                <select id="rounding">
+                  <option value="none" data-en="No rounding" data-ar="لا تقريب">No rounding</option>
+                  <option value="0.01" data-en="2 decimals" data-ar="2 أرقام عشرية">2 decimals</option>
+                  <option value="1" data-en="Round to whole" data-ar="تقريب للأقرب">Round to whole</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="calc-actions">
+              <button id="calculateBtn" class="calculate-btn">
+                <i class="fas fa-calculator"></i>
+                <span data-en="Calculate" data-ar="احسب">Calculate</span>
+              </button>
+              <button id="saveCalcBtn" class="calculate-btn secondary">
+                <i class="fas fa-save"></i>
+                <span data-en="Save" data-ar="حفظ">Save</span>
+              </button>
+            </div>
           </div>
 
-          <div class="unit-card">
-            <h4>24K / Gram</h4>
-            <p>Buy: <span id="unitBuyValue_24"></span></p>
-            <p>Sell: <span id="unitSellValue_24"></span></p>
+          <!-- Results -->
+          <div id="calculationResults" class="results-section" aria-live="polite">
+            <div class="result-card">
+              <h3 data-en="Calculation Results" data-ar="نتائج الحساب">Calculation Results</h3>
+              <div class="result-details"></div>
+              <div class="result-actions">
+                <button id="copyResultBtn" class="action-btn"><i class="fas fa-copy"></i> <span data-en="Copy" data-ar="نسخ">Copy</span></button>
+              </div>
+            </div>
           </div>
-        </div>
+        </section>
 
-        <!-- Display last updated information -->
-        <div>
-          <div id="lastUpdated" class="centered-text"></div>
-          <button onclick="fetchPrices()">Update Prices</button>
-        </div>
-        <br />
-
-        <label for="weight">Enter Weight (grams): </label>
-        <input type="number" id="weight" placeholder="Enter weight in grams" />
-
-        <button onclick="calculate()">Calculate</button>
-
-        <div id="result" class="centered-text">
-          <p>Results</p>
-          <div class="results-card">
-            <p>Buy: <span id="buyValue">NaN</span></p>
-            <p>Sell: <span id="sellValue">NaN</span></p>
+        <!-- Footer -->
+        <footer class="app-footer">
+          <div class="footer-info">
+            <p data-en="© 2025 BTC Gold Calculator. All rights reserved." 
+               data-ar="© 2025 حاسبة الذهب BTC. جميع الحقوق محفوظة.">
+               © 2025 BTC Gold Calculator. All rights reserved.
+            </p>
+            <p class="disclaimer" data-en="Prices are for reference only. Please verify with official sources." 
+               data-ar="الأسعار للمرجع فقط. يرجى التحقق من المصادر الرسمية.">
+               Prices are for reference only. Please verify with official sources.
+            </p>
           </div>
-        </div>
-        <h2>Support Me</h2>
-
-        <div>
-          <a
-            style="padding: 10px"
-            href="https://www.buymeacoffee.com/tarekragab"
-            ><img
-              src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"
-              width="120"
-          /></a>
-          <a style="padding: 10px" href="https://www.ko-fi.com/tarekragab"
-            ><img src="https://storage.ko-fi.com/cdn/kofi2.png?v=3" width="120"
-          /></a>
-        </div>
+        </footer>
       </main>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- History Modal -->
+    <div id="historyModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 data-en="Calculation History" data-ar="تاريخ العمليات الحسابية">Calculation History</h2>
+          <button class="modal-close">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div id="historyList" class="history-list"></div>
+        </div>
+      </div>
     </div>
 
     <script src="script.js"></script>

@@ -1,5 +1,8 @@
 # Vs code config
 .vscode/
+./.vscode/*
+!.vscode/settings.json
+
 
 # Ignore node_modules folder
 node_modules/

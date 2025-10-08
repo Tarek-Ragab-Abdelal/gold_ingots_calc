@@ -1,0 +1,51 @@
+{
+  "name": "BTC Gold Calculator",
+  "short_name": "Gold Calc",
+  "description": "Professional gold price calculator with Arabic support",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#D4AF37",
+  "theme_color": "#D4AF37",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "dir": "auto",
+  "categories": ["finance", "business", "utilities"],
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "logo.png", 
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "logo.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    }
+  ],
+  "prefer_related_applications": false,
+  "shortcuts": [
+    {
+      "name": "Quick Calculate",
+      "short_name": "Calculate",
+      "description": "Quick price calculation",
+      "url": "/#calculator",
+      "icons": [
+        {
+          "src": "logo.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}

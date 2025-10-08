@@ -1,155 +1,285 @@
-body {
-  position: relative;
-  overflow-x: auto;
-  overflow-y: auto;
-  scroll-behavior: auto;
-  padding-bottom: 30%;
-
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f9f9f9;
-  margin: 20;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+/* Mobile-first modern look for BTC Gold Calculator */
+/* Variables */
+:root{
+  --primary: #D4AF37;
+  --primary-dark: #b8951f;
+  --bg: #fafafa;
+  --surface: #ffffff;
+  --muted: #6b7280;
+  --text: #111827;
+  --accent: #0ea5a4;
+  --danger: #dc2626;
+  --shadow: rgba(16,24,40,0.08);
 }
 
-.container {
-  max-width: 600px;
-  width: 90%;
+[data-theme="dark"]{
+  --bg: #0b1020;
+  --surface: #0f1724;
+  --text: #f3f4f6;
+  --muted: #9ca3af;
+  --shadow: rgba(0,0,0,0.6);
+  --primary: #FFD54F;
 }
 
-header {
-  text-align: center;
-  margin-bottom: 20px;
+/* Base */
+*{box-sizing:border-box}
+html{font-size:16px; -webkit-font-smoothing:antialiased}
+body{
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  margin:0;
+  -webkit-font-smoothing:antialiased;
+}
+.container{
+  max-width:760px;
+  margin:0 auto;
+  padding:12px;
 }
 
-h1 {
-  color: #333;
+/* Header */
+.app-header{
+  margin-bottom:12px;
 }
-
-main {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-  margin-top: 20px;
+.title-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
 }
-
-.label-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.title-left h1{
+  font-size:1.25rem;
+  margin:0;
+  font-weight:700;
 }
-
-label {
-  font-size: 1.2em;
+.title-left .subtitle{
+  font-size:0.85rem;
+  color:var(--muted);
+  margin-top:4px;
 }
-
-input {
-  width: calc(100% - 20px);
-  padding: 10px;
-  margin: 10px 0;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+.title-actions{
+  display:flex;
+  gap:8px;
 }
+.icon-btn{
+  background:transparent;
+  border:1px solid rgba(0,0,0,0.06);
+  color:var(--text);
+  padding:8px;
+  border-radius:10px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  width:42px;
+  height:42px;
+  box-shadow: 0 6px 18px var(--shadow);
+}
+[dir="rtl"] .title-left { text-align:right }
 
-button {
-  width: 100%;
-  padding: 12px;
-  margin-top: 10px;
-  cursor: pointer;
-  background-color: #046307;
+/* Compact market overview - horizontal scroll on narrow screens */
+.market-overview.compact{
+  display:flex;
+  gap:10px;
+  overflow-x:auto;
+  padding:8px 0;
+  align-items:center;
+}
+.price-card{
+  min-width:160px;
+  background:var(--surface);
+  border-radius:12px;
+  padding:10px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  box-shadow: 0 8px 30px var(--shadow);
+  border:1px solid rgba(0,0,0,0.03);
+}
+.price-card .card-left .card-title{
+  font-weight:600;
+  font-size:0.95rem;
+}
+.price-card .card-left .card-sub{
+  font-size:0.76rem;
+  color:var(--muted);
+  margin-top:4px;
+}
+.card-right { text-align:right; min-width:86px }
+.price-buy{ font-weight:700; color:var(--primary-dark) }
+.price-sell{ font-size:0.82rem; color:var(--muted); margin-top:4px }
+.small-meta { margin-left:auto; color:var(--muted); font-size:0.75rem }
+
+/* Quick actions */
+.quick-actions{
+  display:flex;
+  gap:10px;
+  margin:12px 0;
+}
+.action-btn{
+  flex:1;
+  background:var(--surface);
+  border-radius:12px;
+  padding:10px;
+  display:flex;
+  gap:8px;
+  align-items:center;
+  justify-content:center;
+  border:1px solid rgba(0,0,0,0.04);
+  cursor:pointer;
+  font-weight:600;
+}
+.action-btn.primary{
+  background:linear-gradient(90deg,var(--primary),var(--primary-dark));
   color: #fff;
-  border: none;
-  border-radius: 5px;
-  font-size: 1.2em;
+}
+.action-btn i{ width:20px; text-align:center }
+
+/* Calculator */
+.calculator-section{
+  background:var(--surface);
+  border-radius:14px;
+  padding:14px;
+  box-shadow: 0 8px 30px var(--shadow);
+}
+.calculator-section h2{ margin:0 0 10px 0; font-size:1rem }
+.calculator-grid{
+  display:grid;
+  gap:10px;
+}
+.input-group label{ display:block; font-size:0.85rem; color:var(--muted); margin-bottom:6px; }
+.input-group input, .input-group select{
+  width:100%;
+  padding:10px;
+  border-radius:10px;
+  border:1px solid rgba(0,0,0,0.06);
+  background:transparent;
+  color:var(--text);
+  font-size:0.95rem;
+}
+.input-row{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.small-gap{ grid-template-columns:1fr 1fr; gap:8px }
+.calc-actions{ display:flex; gap:10px; margin-top:6px }
+.calculate-btn{
+  flex:1;
+  background:linear-gradient(90deg,var(--primary),var(--primary-dark));
+  color:#fff;
+  padding:10px;
+  border-radius:10px;
+  border:none;
+  cursor:pointer;
+  font-weight:700;
+  display:flex;
+  gap:8px;
+  align-items:center;
+  justify-content:center;
+}
+.calculate-btn.secondary{
+  background:transparent;
+  color:var(--text);
+  border:1px solid rgba(0,0,0,0.06);
 }
 
-.centered-text {
-  text-align: center;
+/* Radio buttons */
+.radio-group{
+  display:flex;
+  gap:12px;
+  margin-top:6px;
+}
+.radio-label{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  cursor:pointer;
+  font-size:0.9rem;
+}
+.radio-label input[type="radio"]{
+  width:auto;
+  margin:0;
 }
 
-#unitPrices {
-  text-align: center;
-  margin-top: 20px;
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: row;
-  justify-content: space-evenly;
+/* Results */
+.results-section{ margin-top:12px; display:none }
+.results-section.show{ display:block }
+.result-card{
+  background: linear-gradient(90deg,#10b981,#06b6d4);
+  color:#fff;
+  padding:12px;
+  border-radius:12px;
+}
+.result-card h3{ margin:0 0 8px 0; font-size:1rem }
+.result-details .result-row{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  margin:6px 0;
+}
+.result-details .total{ font-weight:800; font-size:1.05rem; margin-top:8px }
+.result-details .small{ font-size:0.85rem; opacity:0.95 }
+
+/* Result sections for buy/sell */
+.result-section{
+  background: rgba(255,255,255,0.1);
+  padding:10px;
+  border-radius:8px;
+  margin:10px 0;
+  border-left:3px solid rgba(255,255,255,0.3);
+}
+.result-section .section-title{
+  font-size:0.9rem;
+  font-weight:700;
+  margin:0 0 8px 0;
+  color:rgba(255,255,255,0.9);
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.result-section .section-title::before{
+  content:'';
+  width:8px;
+  height:8px;
+  background:currentColor;
+  border-radius:50%;
 }
 
-.unit-card {
-  flex: 0 1 calc(48% - 10px);
-  flex: 1;
-  margin-bottom: 20px;
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 12px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  margin: 5px;
+/* Toasts */
+.toast-container{
+  position:fixed;
+  top:16px;
+  right:16px;
+  z-index:1005;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+[dir="rtl"] .toast-container{ right:auto; left:16px }
+.toast{
+  background:var(--surface);
+  color:var(--text);
+  padding:10px 12px;
+  border-radius:10px;
+  box-shadow:0 8px 20px var(--shadow);
+  border-left:4px solid var(--primary);
 }
 
-#unitPrices h2 {
-  color: #333;
-}
+/* Modal */
+.modal{ position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,0.5); z-index:1006}
+.modal.show{ display:flex }
+.modal-content{ width:95%; max-width:640px; background:var(--surface); border-radius:12px; overflow:auto; max-height:85vh; padding:0; }
+.modal-header{ display:flex; justify-content:space-between; align-items:center; padding:12px 16px; border-bottom:1px solid rgba(0,0,0,0.04) }
+.modal-body{ padding:12px 16px }
+.modal-close{ background:transparent; border:none; font-size:1.1rem; cursor:pointer }
 
-#unitPrices span {
-  font-weight: bold;
-  color: #333;
-}
+/* History items */
+.history-item{ padding:8px; border-radius:8px; background:var(--bg); border:1px solid rgba(0,0,0,0.03); margin-bottom:8px }
 
-#loadingIndicator {
-  color: #666;
+/* Responsive tweaks */
+@media(min-width:800px){
+  .container{ max-width:980px }
+  .input-row{ grid-template-columns: 1fr 1fr }
 }
-
-#result {
-  margin-top: 10px;
-  font-size: 1.2em;
-}
-
-.results-card {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 12px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-.results-card p {
-  flex: 1;
-  margin: 5px;
-}
-
-span {
-  font-weight: bold;
-  color: #333;
-}
-
-/* Media Query for Mobile Devices */
-@media only screen and (max-width: 600px) {
-  body {
-    font-size: 0.8em;
-  }
-  button {
-    width: 100%;
-    padding: 12px;
-    margin-top: 8px;
-    font-size: 1.1em;
-  }
-  .unit-card {
-    flex: 1;
-    padding: 10px;
-  }
-  .results-card {
-    flex-wrap: wrap;
-    padding: 10px;
-    margin-bottom: 10px;
-  }
-  .results-card p {
-    flex: 1;
-    margin: 10px;
-  }
+@media(max-width:480px){
+  .input-row{ grid-template-columns:1fr }
+  .small-meta{ display:none }
+  .price-card{ min-width:140px }
 }
