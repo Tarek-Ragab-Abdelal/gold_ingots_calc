@@ -13,6 +13,7 @@
     
     <title>BTC Gold Calculator | حاسبة الذهب</title>
     <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="new-features.css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
   </head>
@@ -32,6 +33,14 @@
             <button id="themeToggle" class="icon-btn" title="تبديل المظهر">
               <i class="fas fa-moon"></i>
             </button>
+          </div>
+        </div>
+
+        <!-- API Warning Area -->
+        <div id="apiWarning" class="api-warning" style="display: none;" aria-live="assertive">
+          <div class="warning-content">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span data-en="Fallback API Warning" data-ar="⚠️ استخدام مصدر أسعار احتياطي - الأسعار قد لا تكون محدثة">⚠️ Using backup price source - prices may not be current</span>
           </div>
         </div>
 
@@ -146,20 +155,14 @@
               </div>
             </div>
 
-            <!-- Fees and options -->
+            <!-- Auto fees and options -->
             <div class="input-row small-gap">
               <div class="input-group">
-                <label for="feePercent" data-en="Fee (%)" data-ar="رسوم (%)">Fee (%)</label>
-                <input type="number" id="feePercent" min="0" step="0.01" placeholder="0.00" value="0">
-              </div>
-
-              <div class="input-group">
-                <label for="rounding" data-en="Rounding" data-ar="التقريب">Rounding</label>
-                <select id="rounding">
-                  <option value="none" data-en="No rounding" data-ar="لا تقريب">No rounding</option>
-                  <option value="0.01" data-en="2 decimals" data-ar="2 أرقام عشرية">2 decimals</option>
-                  <option value="1" data-en="Round to whole" data-ar="تقريب للأقرب">Round to whole</option>
-                </select>
+                <label for="autoFeeDisplay" data-en="Auto Fee" data-ar="رسوم تلقائية">Auto Fee</label>
+                <div class="fee-display" id="autoFeeDisplay">
+                  <span class="fee-value">--</span>
+                  <small class="fee-note" data-en="Fee automatically calculated" data-ar="الرسوم محسوبة تلقائياً حسب نوع الذهب">Fee automatically calculated based on gold type</small>
+                </div>
               </div>
             </div>
 
@@ -192,7 +195,7 @@
           <div class="footer-info">
             <p data-en="© 2025 BTC Gold Calculator. All rights reserved." 
                data-ar="© 2025 حاسبة الذهب BTC. جميع الحقوق محفوظة.">
-               © 2025 BTC Gold Calculator. All rights reserved.
+               © 2025 - Tarek Ragab Gold Calculator. All rights reserved.
             </p>
             <p class="disclaimer" data-en="Prices are for reference only. Please verify with official sources." 
                data-ar="الأسعار للمرجع فقط. يرجى التحقق من المصادر الرسمية.">
@@ -221,6 +224,6 @@
       </div>
     </div>
 
-    <script src="script.js"></script>
+    <script type="module" src="js/main.js"></script>
   </body>
 </html>

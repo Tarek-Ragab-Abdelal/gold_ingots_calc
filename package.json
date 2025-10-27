@@ -1,0 +1,37 @@
+{
+  "name": "gold-calculator",
+  "version": "1.0.0",
+  "description": "Professional gold price calculator with real-time prices and Arabic support",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "dev": "tsc --watch",
+    "clean": "rimraf js/*.js js/*.js.map",
+    "start": "npm run build && python -m http.server 8080",
+    "lint": "eslint js/**/*.ts",
+    "type-check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "rimraf": "^5.0.0"
+  },
+  "keywords": [
+    "gold",
+    "calculator",
+    "prices",
+    "BTC",
+    "Egypt",
+    "Arabic",
+    "PWA"
+  ],
+  "author": "Gold Calculator Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Tarek-Ragab-Abdelal/gold_ingots_calc.git"
+  }
+}
