@@ -200,7 +200,7 @@ export interface StorageService {
 export interface UIManager {
   applyTheme(theme: Theme): void;
   applyLanguage(language: Language): void;
-  showLoading(show: boolean): void;
+  showLoading(show: boolean, message?: string): void;
   showToast(message: string, type?: ToastType): void;
   showModal(modal: HTMLElement): void;
   closeModal(modal: HTMLElement): void;

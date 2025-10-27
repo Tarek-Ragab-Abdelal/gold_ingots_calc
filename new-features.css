@@ -72,10 +72,71 @@
   gap: 12px;
 }
 
+/* Exchange Rate Display Styles */
+.exchange-rate-info {
+  background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+  color: white;
+  padding: 10px 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(58, 123, 213, 0.3);
+  border-left: 4px solid #0070f3;
+}
+
+.rate-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-weight: 500;
+}
+
+.rate-content i {
+  font-size: 16px;
+}
+
+.rate-text {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.rate-value {
+  font-weight: 700;
+  font-size: 16px;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.rate-refresh-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  padding: 6px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.rate-refresh-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.rate-refresh-btn i {
+  font-size: 12px;
+}
+
 /* Dark theme adjustments for new elements */
 [data-theme="dark"] .api-warning {
   background: linear-gradient(135deg, #e55039, #c44569);
   border-left-color: #e55039;
+}
+
+[data-theme="dark"] .exchange-rate-info {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-left-color: #667eea;
 }
 
 [data-theme="dark"] .fee-display {
@@ -96,6 +157,23 @@
   
   .warning-content i {
     font-size: 16px;
+  }
+
+  .exchange-rate-info {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+  
+  .rate-content i {
+    font-size: 14px;
+  }
+  
+  .rate-value {
+    font-size: 14px;
+  }
+  
+  .rate-refresh-btn {
+    padding: 4px 6px;
   }
 }
 

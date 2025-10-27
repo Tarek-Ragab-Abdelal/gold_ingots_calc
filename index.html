@@ -44,6 +44,20 @@
           </div>
         </div>
 
+        <!-- Exchange Rate Display -->
+        <div id="exchangeRateDisplay" class="exchange-rate-info" style="display: none;" aria-live="polite">
+          <div class="rate-content">
+            <i class="fas fa-exchange-alt"></i>
+            <span class="rate-text">
+              <span data-en="USD/EGP:" data-ar="دولار/جنيه:">USD/EGP:</span>
+              <span id="exchangeRateValue" class="rate-value">--</span>
+            </span>
+            <button id="refreshExchangeRate" class="rate-refresh-btn" title="Refresh exchange rate">
+              <i class="fas fa-sync-alt"></i>
+            </button>
+          </div>
+        </div>
+
         <!-- Compact Market Overview - mobile friendly -->
         <div class="market-overview compact" aria-live="polite">
           <!-- Cards will be filled dynamically (21K & 24K emphasized) -->
