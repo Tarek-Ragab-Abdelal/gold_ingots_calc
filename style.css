@@ -41,6 +41,23 @@ body{
 .app-header{
   margin-bottom:12px;
 }
+.app-footer{
+    background: var(--surface-color);
+    padding: 30px 25px;
+    border-radius: 15px;
+    box-shadow: 0 3px 15px var(--shadow-light);
+    text-align: center;
+}
+.support-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+.footer-info {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
 .title-row{
   display:flex;
   align-items:center;

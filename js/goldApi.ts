@@ -19,6 +19,12 @@ export class GoldApiService implements ApiService {
 
   constructor(apiKeys: { [key: string]: string } = {}) {
     this.apiKeys = apiKeys;
+    // Initialize with current time to avoid "Invalid Date" issues
+    const now = new Date();
+    this.lastUpdated = {
+      date: now.toLocaleDateString(),
+      time: now.toLocaleTimeString()
+    };
   }
 
   async fetchPrices(): Promise<GoldProduct[]> {
@@ -54,10 +60,15 @@ export class GoldApiService implements ApiService {
   async fetchPricesWithSource(): Promise<ApiResult> {
     const products = await this.fetchPrices();
     
+    // Provide current date/time as fallback if no API timestamp available
+    const now = new Date();
+    const fallbackDate = now.toLocaleDateString();
+    const fallbackTime = now.toLocaleTimeString();
+    
     return {
       products,
       source: this.currentSource,
-      lastUpdated: this.lastUpdated || { date: 'Unknown', time: 'Unknown' },
+      lastUpdated: this.lastUpdated || { date: fallbackDate, time: fallbackTime },
       isAccurate: this.currentSource === 'btc' // Only BTC is considered fully accurate
     };
   }
@@ -137,7 +148,7 @@ export class GoldApiService implements ApiService {
 
     this.lastUpdated = {
       date: data.date || new Date().toLocaleDateString(),
-      time: new Date(data.timestamp * 1000).toLocaleTimeString()
+      time: data.timestamp ? new Date(data.timestamp * 1000).toLocaleTimeString() : new Date().toLocaleTimeString()
     };
 
     return this.createStandardProducts(goldPriceEGP);
@@ -163,8 +174,8 @@ export class GoldApiService implements ApiService {
     const goldPriceEGP = goldPricePerGram * egpRate;
 
     this.lastUpdated = {
-      date: new Date(data.timestamp).toLocaleDateString(),
-      time: new Date(data.timestamp).toLocaleTimeString()
+      date: data.timestamp ? new Date(data.timestamp).toLocaleDateString() : new Date().toLocaleDateString(),
+      time: data.timestamp ? new Date(data.timestamp).toLocaleTimeString() : new Date().toLocaleTimeString()
     };
 
     return this.createStandardProducts(goldPriceEGP);
