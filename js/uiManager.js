@@ -21,12 +21,37 @@ export class UIManagerService {
         this.localization.applyToDOM();
     }
     /**
-     * Show or hide loading indicator
+     * Show or hide loading indicator with optional custom message
      */
-    showLoading(show) {
+    showLoading(show, message) {
         const loader = document.getElementById('loadingIndicator');
         if (loader) {
             loader.classList.toggle('show', show);
+            if (show && message) {
+                const loadingText = loader.querySelector('p');
+                if (loadingText) {
+                    loadingText.textContent = message;
+                }
+            }
+        }
+        // Add visual feedback to refresh button
+        const refreshBtn = document.getElementById('refreshBtn');
+        if (refreshBtn) {
+            const icon = refreshBtn.querySelector('i');
+            if (show) {
+                refreshBtn.style.opacity = '0.7';
+                refreshBtn.style.pointerEvents = 'none';
+                if (icon) {
+                    icon.style.animation = 'spin 1s linear infinite';
+                }
+            }
+            else {
+                refreshBtn.style.opacity = '';
+                refreshBtn.style.pointerEvents = '';
+                if (icon) {
+                    icon.style.animation = '';
+                }
+            }
         }
     }
     /**
@@ -382,6 +407,26 @@ export class UIManagerService {
         }
       `;
             document.head.appendChild(styleEl);
+        }
+    }
+    /**
+     * Update exchange rate display
+     */
+    updateExchangeRateDisplay(rate, isVisible = true) {
+        const display = document.getElementById('exchangeRateDisplay');
+        const rateValue = document.getElementById('exchangeRateValue');
+        if (display && rateValue) {
+            display.style.display = isVisible ? 'block' : 'none';
+            rateValue.textContent = rate.toFixed(2);
+        }
+    }
+    /**
+     * Hide exchange rate display
+     */
+    hideExchangeRateDisplay() {
+        const display = document.getElementById('exchangeRateDisplay');
+        if (display) {
+            display.style.display = 'none';
         }
     }
     /**
