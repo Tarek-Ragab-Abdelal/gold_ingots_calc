@@ -21,12 +21,37 @@ export class UIManagerService {
         this.localization.applyToDOM();
     }
     /**
-     * Show or hide loading indicator
+     * Show or hide loading indicator with optional custom message
      */
-    showLoading(show) {
+    showLoading(show, message) {
         const loader = document.getElementById('loadingIndicator');
         if (loader) {
             loader.classList.toggle('show', show);
+            if (show && message) {
+                const loadingText = loader.querySelector('p');
+                if (loadingText) {
+                    loadingText.textContent = message;
+                }
+            }
+        }
+        // Add visual feedback to refresh button
+        const refreshBtn = document.getElementById('refreshBtn');
+        if (refreshBtn) {
+            const icon = refreshBtn.querySelector('i');
+            if (show) {
+                refreshBtn.style.opacity = '0.7';
+                refreshBtn.style.pointerEvents = 'none';
+                if (icon) {
+                    icon.style.animation = 'spin 1s linear infinite';
+                }
+            }
+            else {
+                refreshBtn.style.opacity = '';
+                refreshBtn.style.pointerEvents = '';
+                if (icon) {
+                    icon.style.animation = '';
+                }
+            }
         }
     }
     /**
@@ -223,6 +248,46 @@ export class UIManagerService {
             html += `<div class="result-row"><strong>${this.localization.translate('Remaining Amount')}:</strong> ${this.localization.formatPrice(result.sellRemainder)}</div>
         </div>
       `;
+            // Display product breakdown if available
+            if (result.breakdown && result.breakdown.length > 0) {
+                html += `
+        <div class="result-section breakdown-section">
+          <h4 class="section-title">${this.localization.translate('Recommended Product Breakdown')}</h4>
+          <div class="breakdown-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>${this.localization.translate('Product')}</th>
+                  <th>${this.localization.translate('Quantity')}</th>
+                  <th>${this.localization.translate('Weight')}</th>
+                  <th>${this.localization.translate('Fee/g')}</th>
+                  <th>${this.localization.translate('Cost')}</th>
+                </tr>
+              </thead>
+              <tbody>
+        `;
+                for (const item of result.breakdown) {
+                    html += `
+                <tr>
+                  <td>${item.productName}</td>
+                  <td>${this.localization.formatNumber(item.quantity, 0)}</td>
+                  <td>${this.localization.formatNumber(item.weight_grams, 2)}g</td>
+                  <td>${this.localization.formatPrice(item.fee_per_gram)}</td>
+                  <td>${this.localization.formatPrice(item.total_cost)}</td>
+                </tr>
+          `;
+                }
+                const lastBreakdown = result.breakdown[result.breakdown.length - 1];
+                html += `
+              </tbody>
+            </table>
+            <div class="breakdown-summary">
+              <div class="result-row"><strong>${this.localization.translate('Remaining Money')}:</strong> ${this.localization.formatPrice(lastBreakdown.remaining_money)}</div>
+            </div>
+          </div>
+        </div>
+        `;
+            }
         }
         resultDetails.innerHTML = html;
         // Show results section
@@ -282,32 +347,54 @@ export class UIManagerService {
     updateAutoFeeDisplay(karat, quantity = 1) {
         const feeDisplay = document.getElementById('autoFeeDisplay');
         const feeValue = feeDisplay?.querySelector('.fee-value');
+        const custom18kFeeRow = document.getElementById('custom18kFeeRow');
         if (!feeValue)
             return;
         let feeText = '--';
         if (karat === '21k') {
-            feeText = '60 EGP/gram';
+            // 21k fees: Gold Pound (8g): 75 EGP/g, Half Pound (4g): 80 EGP/g, Quarter Pound (2g): 85 EGP/g
+            if (quantity >= 8)
+                feeText = '75 EGP/gram';
+            else if (quantity >= 4)
+                feeText = '80 EGP/gram';
+            else
+                feeText = '85 EGP/gram';
         }
         else if (karat === '24k') {
+            // 24k fees based on quantity ranges
             if (quantity >= 100)
-                feeText = '85 EGP/gram';
+                feeText = '71 EGP/gram';
             else if (quantity >= 50)
-                feeText = '85 EGP/gram';
+                feeText = '77 EGP/gram';
+            else if (quantity >= 31.1)
+                feeText = '79 EGP/gram';
             else if (quantity >= 20)
-                feeText = '85 EGP/gram';
+                feeText = '80 EGP/gram';
             else if (quantity >= 10)
-                feeText = '85 EGP/gram';
+                feeText = '82 EGP/gram';
             else if (quantity >= 5)
                 feeText = '85 EGP/gram';
             else if (quantity >= 2.5)
-                feeText = '150 EGP/gram';
+                feeText = '110 EGP/gram';
             else
                 feeText = '185 EGP/gram';
         }
         else if (karat === '18k') {
-            feeText = '2% of value';
+            // Check if custom fee is entered
+            const custom18kFeeInput = document.getElementById('custom18kFee');
+            const customFeeValue = Number.parseFloat(custom18kFeeInput?.value || '0');
+            if (customFeeValue > 0) {
+                feeText = `${customFeeValue} EGP/gram`;
+            }
+            else {
+                feeText = '2% of value (or enter custom fee below)';
+            }
         }
         feeValue.textContent = feeText;
+        // Show/hide 18k custom fee input based on karat
+        if (custom18kFeeRow) {
+            custom18kFeeRow.style.display = karat === '18k' ? 'flex' : 'none';
+        }
     }
     /**
      * Get form values for calculation
@@ -344,6 +431,14 @@ export class UIManagerService {
             result.moneyAmount = Number.parseFloat(moneyInput?.value || '0') || 0;
             const prefSelect = document.getElementById('minPieceSize');
             result.preferenceType = prefSelect?.value || 'pieces';
+        }
+        // Add custom 18k fee if provided
+        if (karat === '18k') {
+            const custom18kFeeInput = document.getElementById('custom18kFee');
+            const customFeeValue = Number.parseFloat(custom18kFeeInput?.value || '0');
+            if (customFeeValue > 0) {
+                result.custom18kFeePerGram = customFeeValue;
+            }
         }
         return result;
     }
@@ -382,6 +477,26 @@ export class UIManagerService {
         }
       `;
             document.head.appendChild(styleEl);
+        }
+    }
+    /**
+     * Update exchange rate display
+     */
+    updateExchangeRateDisplay(rate, isVisible = true) {
+        const display = document.getElementById('exchangeRateDisplay');
+        const rateValue = document.getElementById('exchangeRateValue');
+        if (display && rateValue) {
+            display.style.display = isVisible ? 'block' : 'none';
+            rateValue.textContent = rate.toFixed(2);
+        }
+    }
+    /**
+     * Hide exchange rate display
+     */
+    hideExchangeRateDisplay() {
+        const display = document.getElementById('exchangeRateDisplay');
+        if (display) {
+            display.style.display = 'none';
         }
     }
     /**

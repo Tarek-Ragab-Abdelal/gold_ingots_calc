@@ -10,7 +10,7 @@ export class GoldCalculator {
             throw new CalculationError('Product not found', 'productId');
         }
         // Calculate automatic fees based on karat type
-        const automaticFee = this.calculateAutomaticFee(input.karat, input.quantity || input.moneyAmount || 1);
+        const automaticFee = this.calculateAutomaticFee(input.karat, input.quantity || input.moneyAmount || 1, input.custom18kFeePerGram);
         const inputWithFees = { ...input, feePercent: automaticFee.feePercent };
         if (input.calcType === 'goldToMoney') {
             return this.calculateGoldToMoney(inputWithFees, product);
@@ -22,29 +22,41 @@ export class GoldCalculator {
     /**
      * Calculate automatic fees based on karat and quantity/amount
      */
-    calculateAutomaticFee(karat, amount) {
+    calculateAutomaticFee(karat, amount, custom18kFee) {
         if (karat === '21k') {
-            // 21k gold always has 60 EGP per gram fee
-            return { feePercent: 0, feePerGram: 60 };
+            // 21k gold fees based on product sizes
+            // Gold Pound (8g): 75 EGP/g, Half Pound (4g): 80 EGP/g, Quarter Pound (2g): 85 EGP/g
+            // Use the closest matching product size
+            if (amount >= 8)
+                return { feePercent: 0, feePerGram: 75 };
+            if (amount >= 4)
+                return { feePercent: 0, feePerGram: 80 };
+            return { feePercent: 0, feePerGram: 85 };
         }
         else if (karat === '24k') {
             // 24k gold fees based on quantity ranges
             if (amount >= 100)
-                return { feePercent: 0, feePerGram: 85 };
+                return { feePercent: 0, feePerGram: 71 };
             if (amount >= 50)
-                return { feePercent: 0, feePerGram: 85 };
+                return { feePercent: 0, feePerGram: 77 };
+            if (amount >= 31.1)
+                return { feePercent: 0, feePerGram: 79 };
             if (amount >= 20)
-                return { feePercent: 0, feePerGram: 85 };
+                return { feePercent: 0, feePerGram: 80 };
             if (amount >= 10)
-                return { feePercent: 0, feePerGram: 85 };
+                return { feePercent: 0, feePerGram: 82 };
             if (amount >= 5)
                 return { feePercent: 0, feePerGram: 85 };
             if (amount >= 2.5)
-                return { feePercent: 0, feePerGram: 150 };
+                return { feePercent: 0, feePerGram: 110 };
             return { feePercent: 0, feePerGram: 185 }; // 1 gram
         }
         else if (karat === '18k') {
-            // 18k gold - no specific fees defined, use 2% as default
+            // 18k gold - use custom fee if provided, otherwise use default
+            if (custom18kFee && custom18kFee > 0) {
+                return { feePercent: 0, feePerGram: custom18kFee };
+            }
+            // Default to 2% percentage fee if no custom fee provided
             return { feePercent: 2, feePerGram: 0 };
         }
         return { feePercent: 0, feePerGram: 0 };
@@ -80,7 +92,7 @@ export class GoldCalculator {
             totalSellValue = quantity * sellPrice;
         }
         // Calculate fees using automatic fee calculation or provided percentage
-        const feeInfo = this.calculateAutomaticFee(input.karat, totalWeightG);
+        const feeInfo = this.calculateAutomaticFee(input.karat, totalWeightG, input.custom18kFeePerGram);
         let buyFeeAmount = 0;
         let sellFeeAmount = 0;
         if (feeInfo.feePerGram > 0) {
@@ -126,7 +138,7 @@ export class GoldCalculator {
         const isPerGramProduct = this.isPerGramProduct(product);
         const preferPieces = input.preferenceType === 'pieces';
         // Calculate fees using automatic fee calculation or provided percentage
-        const feeInfo = this.calculateAutomaticFee(input.karat, 1); // Base calculation
+        const feeInfo = this.calculateAutomaticFee(input.karat, 1, input.custom18kFeePerGram); // Base calculation
         let buyFeeAmount = 0;
         let sellFeeAmount = 0;
         if (input.feePercent && input.feePercent > 0) {
@@ -195,7 +207,8 @@ export class GoldCalculator {
         const baseResult = this.calculateMoneyToGold(input, product);
         // Add product breakdown for optimal purchasing
         if (input.karat === '21k' || input.karat === '24k') {
-            const breakdown = this.calculateOptimalBreakdown(input.moneyAmount || 0, input.karat);
+            const baseGoldPrice = parseFloat(String(product.ask)); // Use actual product price from API
+            const breakdown = this.calculateOptimalBreakdown(input.moneyAmount || 0, input.karat, baseGoldPrice);
             return { ...baseResult, breakdown };
         }
         return baseResult;
@@ -203,7 +216,7 @@ export class GoldCalculator {
     /**
      * Calculate optimal product breakdown for a given amount of money
      */
-    calculateOptimalBreakdown(moneyAmount, karat) {
+    calculateOptimalBreakdown(moneyAmount, karat, baseGoldPricePerGram) {
         const breakdown = [];
         let remainingMoney = moneyAmount;
         if (karat === '21k') {
@@ -212,9 +225,7 @@ export class GoldCalculator {
             for (const productConfig of products) {
                 if (remainingMoney <= 0)
                     break;
-                // Estimate base gold price (this would come from API in real implementation)
-                const baseGoldPrice = 2800; // EGP per gram - this should be dynamic
-                const totalCostPerGram = baseGoldPrice + productConfig.fee_per_gram;
+                const totalCostPerGram = baseGoldPricePerGram + productConfig.fee_per_gram;
                 const totalCostPerUnit = totalCostPerGram * productConfig.weight_grams;
                 const quantity = Math.floor(remainingMoney / totalCostPerUnit);
                 if (quantity > 0) {
@@ -232,14 +243,12 @@ export class GoldCalculator {
             }
         }
         else if (karat === '24k') {
-            // For 24k gold, optimize using different gram sizes
+            // For 24k gold, optimize using different gram sizes (largest first)
             const products = GOLD_PRODUCTS_CONFIG['24k'].sort((a, b) => b.weight_grams - a.weight_grams);
             for (const productConfig of products) {
                 if (remainingMoney <= 0)
                     break;
-                // Estimate base gold price (this would come from API in real implementation)
-                const baseGoldPrice = 3000; // EGP per gram - this should be dynamic
-                const totalCostPerGram = baseGoldPrice + productConfig.fee_per_gram;
+                const totalCostPerGram = baseGoldPricePerGram + productConfig.fee_per_gram;
                 const totalCostPerUnit = totalCostPerGram * productConfig.weight_grams;
                 const quantity = Math.floor(remainingMoney / totalCostPerUnit);
                 if (quantity > 0) {

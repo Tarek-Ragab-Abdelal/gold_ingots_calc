@@ -57,7 +57,11 @@ class GoldCalculatorApp {
         });
         // Price refresh
         document.getElementById('refreshBtn')?.addEventListener('click', () => {
-            this.fetchPrices();
+            this.fetchPrices(true);
+        });
+        // Exchange rate refresh
+        document.getElementById('refreshExchangeRate')?.addEventListener('click', () => {
+            this.refreshExchangeRate();
         });
         // Calculator actions
         document.getElementById('calculateBtn')?.addEventListener('click', () => {
@@ -97,13 +101,59 @@ class GoldCalculatorApp {
         document.getElementById('moneyAmount')?.addEventListener('input', () => {
             this.updateAutoFeeDisplay();
         });
+        // Custom 18k fee change - update fee display
+        document.getElementById('custom18kFee')?.addEventListener('input', () => {
+            this.updateAutoFeeDisplay();
+        });
+    }
+    /**
+     * Refresh exchange rate manually
+     */
+    async refreshExchangeRate() {
+        try {
+            this.uiManager.showLoading(true, this.localization.translate('Fetching latest prices...'));
+            const { usdToEgp } = await this.apiService.refreshExchangeRates();
+            this.uiManager.updateExchangeRateDisplay(usdToEgp, true);
+            this.uiManager.showToast(this.localization.translate('Exchange rate updated'), 'success');
+        }
+        catch (error) {
+            console.error('Failed to refresh exchange rate:', error);
+            this.uiManager.showToast(this.localization.translate('Failed to update exchange rate'), 'error');
+        }
+        finally {
+            this.uiManager.showLoading(false);
+        }
+    }
+    /**
+     * Update exchange rate display after prices are fetched
+     */
+    async updateExchangeRateDisplay() {
+        try {
+            // Get cached exchange rate info
+            const cachedRate = this.apiService.getCachedExchangeRate();
+            if (cachedRate && !cachedRate.isExpired) {
+                this.uiManager.updateExchangeRateDisplay(cachedRate.rate, true);
+            }
+            else {
+                // If no cached rate or expired, fetch new one
+                const { usdToEgp } = await this.apiService.getExchangeRates();
+                this.uiManager.updateExchangeRateDisplay(usdToEgp, true);
+            }
+        }
+        catch (error) {
+            console.warn('Failed to update exchange rate display:', error);
+            this.uiManager.hideExchangeRateDisplay();
+        }
     }
     /**
      * Fetch gold prices from API with fallback support and show warnings
      */
-    async fetchPrices() {
+    async fetchPrices(isRefresh = false) {
         try {
-            this.uiManager.showLoading(true);
+            const loadingMessage = isRefresh
+                ? this.localization.translate('Refreshing data...')
+                : this.localization.translate('Loading prices...');
+            this.uiManager.showLoading(true, loadingMessage);
             // Use new API method with source tracking
             const apiResult = await this.apiService.fetchPricesWithSource();
             this.goldPrices = apiResult.products;
@@ -117,6 +167,8 @@ class GoldCalculatorApp {
                 this.uiManager.updateLastUpdated(apiResult.lastUpdated.date, apiResult.lastUpdated.time);
             }
             this.uiManager.showToast(this.localization.translate('Prices updated successfully'), 'success');
+            // Update exchange rate display
+            await this.updateExchangeRateDisplay();
         }
         catch (error) {
             console.error('Failed to fetch prices:', error);

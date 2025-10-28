@@ -5,11 +5,9 @@ export class GoldApiService {
         this.goldPrices = [];
         this.lastUpdated = null;
         this.currentSource = 'btc';
-        
         // Exchange rate caching
         this.cachedExchangeRate = null;
         this.EXCHANGE_RATE_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
-        
         this.apiKeys = apiKeys;
         // Initialize with current time to avoid "Invalid Date" issues
         const now = new Date();
@@ -17,7 +15,6 @@ export class GoldApiService {
             date: now.toLocaleDateString(),
             time: now.toLocaleTimeString()
         };
-        
         // Initialize exchange rates in background
         this.updateExchangeRatesInBackground();
     }
@@ -48,16 +45,13 @@ export class GoldApiService {
     async fetchPricesWithSource() {
         // Fetch gold prices
         const products = await this.fetchPrices();
-        
         // Always update exchange rates in background (don't wait for it to complete)
         // This ensures we have up-to-date exchange rates even when BTC API is working
         this.updateExchangeRatesInBackground();
-        
         // Provide current date/time as fallback if no API timestamp available
         const now = new Date();
         const fallbackDate = now.toLocaleDateString();
         const fallbackTime = now.toLocaleTimeString();
-        
         return {
             products,
             source: this.currentSource,
@@ -118,15 +112,13 @@ export class GoldApiService {
         // Convert from troy ounce to gram and from USD to EGP
         const goldPricePerOunce = 1 / data.rates.XAU; // USD per ounce
         const goldPricePerGram = goldPricePerOunce / 31.1034768; // USD per gram
-        
         // Get current USD to EGP exchange rate dynamically
         const { usdToEgp } = await this.getExchangeRates();
         const goldPriceEGP = goldPricePerGram * usdToEgp;
-
         console.log(`MetalsAPI conversion: $${goldPricePerGram.toFixed(2)}/g * ${usdToEgp.toFixed(2)} EGP/USD = ${goldPriceEGP.toFixed(2)} EGP/g`);
         this.lastUpdated = {
             date: data.date || new Date().toLocaleDateString(),
-            time: new Date(data.timestamp * 1000).toLocaleTimeString()
+            time: data.timestamp ? new Date(data.timestamp * 1000).toLocaleTimeString() : new Date().toLocaleTimeString()
         };
         return this.createStandardProducts(goldPriceEGP);
     }
@@ -138,25 +130,19 @@ export class GoldApiService {
             'https://api.metals.live/v1/spot/gold',
             'https://api.goldapi.io/api/XAU/USD' // Alternative endpoint
         ];
-
         let lastError = null;
-
         for (const endpoint of endpoints) {
             try {
                 const response = await fetch(endpoint);
-
                 if (!response.ok) {
                     lastError = new Error(`HTTP ${response.status} from ${endpoint}`);
                     continue;
                 }
-
                 const data = await response.json();
                 console.log(`Gold API response from ${endpoint}:`, data); // Debug log
-
                 // Handle different response formats
                 let priceInUSD;
                 let timestamp;
-
                 // gold-api.com format
                 if (data.price) {
                     priceInUSD = data.price;
@@ -172,42 +158,37 @@ export class GoldApiService {
                     priceInUSD = data.price_gram_24k;
                     timestamp = data.timestamp;
                 }
-
                 if (!priceInUSD || priceInUSD <= 0) {
                     lastError = new Error(`Invalid price data from ${endpoint}: ${JSON.stringify(data)}`);
                     continue;
                 }
-
                 // Convert from USD per ounce to USD per gram (if needed)
                 let goldPricePerGramUSD;
                 if (endpoint.includes('goldapi.io')) {
                     // goldapi.io returns price per gram
                     goldPricePerGramUSD = priceInUSD;
-                } else {
+                }
+                else {
                     // Others return price per troy ounce
                     goldPricePerGramUSD = priceInUSD / 31.1034768;
                 }
-                
                 // Get current USD to EGP exchange rate dynamically
                 const { usdToEgp } = await this.getExchangeRates();
+                console.log(`Fetched gold price from ${endpoint}: $${goldPricePerGramUSD.toFixed(2)}/g and USD/EGP: ${usdToEgp.toFixed(2)}`);
                 const goldPriceEGP = goldPricePerGramUSD * usdToEgp;
-
                 console.log(`Gold conversion: $${goldPricePerGramUSD.toFixed(2)}/g * ${usdToEgp.toFixed(2)} EGP/USD = ${goldPriceEGP.toFixed(2)} EGP/g`);
-
                 this.lastUpdated = {
                     date: timestamp ? new Date(timestamp * 1000).toLocaleDateString() : new Date().toLocaleDateString(),
                     time: timestamp ? new Date(timestamp * 1000).toLocaleTimeString() : new Date().toLocaleTimeString()
                 };
-
                 return this.createStandardProducts(goldPriceEGP);
-
-            } catch (error) {
+            }
+            catch (error) {
                 lastError = error instanceof Error ? error : new Error(String(error));
                 console.warn(`Gold API endpoint ${endpoint} failed:`, lastError.message);
                 continue;
             }
         }
-
         throw new ApiError(`All Gold API endpoints failed. Last error: ${lastError?.message}`, 'gold_api_io');
     }
     // Fallback API 3 - Free alternative API with estimated gold price
@@ -215,31 +196,25 @@ export class GoldApiService {
         try {
             // Get current USD to EGP exchange rate
             const { usdToEgp } = await this.getExchangeRates();
-            
             // Use a reasonable estimate for gold price in USD per gram (24K)
             // This is based on approximate current market rates
             const estimatedGoldPriceUSD = 77; // Approximately $77 per gram for 24K gold
             const goldPriceEGP = estimatedGoldPriceUSD * usdToEgp;
-
             console.log(`FreeAPI conversion: $${estimatedGoldPriceUSD}/g * ${usdToEgp.toFixed(2)} EGP/USD = ${goldPriceEGP.toFixed(2)} EGP/g`);
-
             this.lastUpdated = {
                 date: new Date().toLocaleDateString(),
                 time: new Date().toLocaleTimeString()
             };
-
             return this.createStandardProducts(goldPriceEGP);
-            
-        } catch (error) {
+        }
+        catch (error) {
             // If exchange rate fetching fails, use a complete fallback
             console.warn('Exchange rate fetch failed in free API, using complete fallback');
             const fallbackGoldPrice = 3800; // Approximate EGP per gram for 24K
-
             this.lastUpdated = {
                 date: new Date().toLocaleDateString(),
                 time: new Date().toLocaleTimeString()
             };
-
             return this.createStandardProducts(fallbackGoldPrice);
         }
     }
@@ -336,7 +311,7 @@ export class GoldApiService {
         // Extract gram amount from product name
         const gramMatch = name.match(/^(\d+(?:\.\d+)?)\s*gram/);
         if (gramMatch)
-            return Number.parseFloat(gramMatch[1]);
+            return parseFloat(gramMatch[1]);
         if (name.includes('pound'))
             return 8; // Egyptian gold pound ≈ 8g
         if (name.includes('ounce') || name.includes('oz'))
@@ -351,59 +326,54 @@ export class GoldApiService {
             console.warn('Background exchange rate update failed:', error);
         });
     }
-
     // Force refresh exchange rates (clears cache and fetches new rate)
     async refreshExchangeRates() {
         this.clearExchangeRateCache();
         return this.getExchangeRates();
     }
-
     // Get current exchange rates with caching and enhanced error handling
     async getExchangeRates() {
         const fallbackRate = 47.5; // fallback rate
         const now = Date.now();
-        
         // Check if we have a valid cached rate
-        if (this.cachedExchangeRate && 
+        if (this.cachedExchangeRate &&
             (now - this.cachedExchangeRate.timestamp) < this.EXCHANGE_RATE_CACHE_DURATION) {
             return { usdToEgp: this.cachedExchangeRate.rate };
         }
-        
         // Try multiple free currency APIs for better reliability
         const apis = [
             'https://api.exchangerate-api.com/v4/latest/USD',
             'https://api.fxapi.com/v1/latest?access_key=fxapi-demo&base=USD&symbols=EGP',
             'https://api.currencyapi.com/v3/latest?apikey=demo&base_currency=USD&currencies=EGP'
         ];
-
         for (const apiUrl of apis) {
             try {
                 const response = await fetch(apiUrl);
-                if (!response.ok) continue;
-                
+                if (!response.ok)
+                    continue;
                 const data = await response.json();
-                
                 // Handle different API response formats
                 let rate;
                 if (data.rates?.EGP) {
                     rate = data.rates.EGP;
-                } else if (data.data?.EGP?.value) {
+                }
+                else if (data.data?.EGP?.value) {
                     rate = data.data.EGP.value;
-                } else if (data.EGP) {
+                }
+                else if (data.EGP) {
                     rate = data.EGP;
                 }
-                
                 if (rate && rate > 0) {
                     // Cache the successful rate
                     this.cachedExchangeRate = { rate, timestamp: now };
                     return { usdToEgp: rate };
                 }
-            } catch (error) {
+            }
+            catch (error) {
                 console.warn(`Currency API failed: ${error}`);
                 continue;
             }
         }
-        
         console.warn('All currency APIs failed, using fallback rate');
         // Cache the fallback rate for a shorter duration to retry sooner
         this.cachedExchangeRate = { rate: fallbackRate, timestamp: now - (this.EXCHANGE_RATE_CACHE_DURATION * 0.8) };
@@ -413,11 +383,9 @@ export class GoldApiService {
     async testGoldApiWithExchangeRate() {
         try {
             console.log('Testing Gold API with exchange rate conversion...');
-            
             // Test exchange rate first
             const { usdToEgp } = await this.getExchangeRates();
             console.log(`Current exchange rate: 1 USD = ${usdToEgp} EGP`);
-            
             // Test gold price
             const goldProducts = await this.fetchFromGoldApiIO();
             if (goldProducts.length > 0) {
@@ -431,13 +399,12 @@ export class GoldApiService {
                     };
                 }
             }
-            
             return { success: false, error: 'No 24k gold product found' };
-        } catch (error) {
+        }
+        catch (error) {
             return { success: false, error: error instanceof Error ? error.message : String(error) };
         }
     }
-
     // Test all APIs to check availability
     async testAllApis() {
         const results = {};
@@ -458,19 +425,16 @@ export class GoldApiService {
         }
         return results;
     }
-
     // Clear cached exchange rate (useful for testing or forced refresh)
     clearExchangeRateCache() {
         this.cachedExchangeRate = null;
     }
-
     // Get cached exchange rate info
     getCachedExchangeRate() {
-        if (!this.cachedExchangeRate) return null;
-        
+        if (!this.cachedExchangeRate)
+            return null;
         const now = Date.now();
         const isExpired = (now - this.cachedExchangeRate.timestamp) >= this.EXCHANGE_RATE_CACHE_DURATION;
-        
         return {
             rate: this.cachedExchangeRate.rate,
             timestamp: this.cachedExchangeRate.timestamp,
