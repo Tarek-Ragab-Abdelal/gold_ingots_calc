@@ -185,6 +185,7 @@ export interface CalculatorInput {
   preferenceType?: PreferenceType;
   weightPerPiece?: number;
   feePercent?: number; // Optional - will be auto-calculated if not provided
+  customFee18k?: number; // Custom fee per gram for 18k gold
 }
 
 // Storage service interface
@@ -242,17 +243,18 @@ export class CalculationError extends Error {
 // Predefined gold product configurations
 export const GOLD_PRODUCTS_CONFIG = {
   '21k': [
-    { name: 'Gold Pound', weight_grams: 8, fee_per_gram: 60 },
-    { name: 'Half Pound', weight_grams: 4, fee_per_gram: 60 },
-    { name: 'Quarter Pound', weight_grams: 2, fee_per_gram: 60 }
+    { name: 'Gold Pound', weight_grams: 8, fee_per_gram: 75 },
+    { name: 'Half Pound', weight_grams: 4, fee_per_gram: 80 },
+    { name: 'Quarter Pound', weight_grams: 2, fee_per_gram: 85 }
   ] as Gold21kProduct[],
   '24k': [
-    { weight_grams: 1, fee_per_gram: 185 },
-    { weight_grams: 2.5, fee_per_gram: 150 },
+    { weight_grams: 100, fee_per_gram: 71 },
+    { weight_grams: 50, fee_per_gram: 77 },
+    { weight_grams: 31.1, fee_per_gram: 79 },
+    { weight_grams: 20, fee_per_gram: 80 },
+    { weight_grams: 10, fee_per_gram: 82 },
     { weight_grams: 5, fee_per_gram: 85 },
-    { weight_grams: 10, fee_per_gram: 85 },
-    { weight_grams: 20, fee_per_gram: 85 },
-    { weight_grams: 50, fee_per_gram: 85 },
-    { weight_grams: 100, fee_per_gram: 85 }
+    { weight_grams: 2.5, fee_per_gram: 110 },
+    { weight_grams: 1, fee_per_gram: 185 }
   ] as Gold24kProduct[]
 } as const;

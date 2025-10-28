@@ -101,6 +101,10 @@ class GoldCalculatorApp {
         document.getElementById('moneyAmount')?.addEventListener('input', () => {
             this.updateAutoFeeDisplay();
         });
+        // Custom 18k fee input change - update fee display
+        document.getElementById('customFee18k')?.addEventListener('input', () => {
+            this.updateAutoFeeDisplay();
+        });
     }
     /**
      * Refresh exchange rate manually

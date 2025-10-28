@@ -286,6 +286,34 @@ export class UIManagerService implements UIManager {
       html += `<div class="result-row"><strong>${this.localization.translate('Remaining Amount')}:</strong> ${this.localization.formatPrice(result.sellRemainder)}</div>
         </div>
       `;
+      
+      // Add product breakdown if available
+      if (result.breakdown && result.breakdown.length > 0) {
+        html += `
+          <div class="result-section">
+            <h4 class="section-title">${this.localization.translate('Optimal Product Breakdown')}</h4>
+            <div class="breakdown-table">
+        `;
+        
+        for (const item of result.breakdown) {
+          html += `
+            <div class="breakdown-row">
+              <div class="breakdown-product">${item.productName}</div>
+              <div class="breakdown-details">
+                <span>${this.localization.translate('Quantity')}: ${item.quantity}</span>
+                <span>${this.localization.translate('Weight')}: ${this.localization.formatNumber(item.weight_grams, 2)}g</span>
+                <span>${this.localization.translate('Fee')}: ${this.localization.formatPrice(item.fee_per_gram)}/g</span>
+                <span>${this.localization.translate('Total Cost')}: ${this.localization.formatPrice(item.total_cost)}</span>
+              </div>
+            </div>
+          `;
+        }
+        
+        html += `
+            </div>
+          </div>
+        `;
+      }
     }
 
     resultDetails.innerHTML = html;
@@ -350,23 +378,38 @@ export class UIManagerService implements UIManager {
   updateAutoFeeDisplay(karat: string, quantity: number = 1): void {
     const feeDisplay = document.getElementById('autoFeeDisplay');
     const feeValue = feeDisplay?.querySelector('.fee-value');
+    const customFee18kGroup = document.getElementById('customFee18kGroup');
     
     if (!feeValue) return;
 
     let feeText = '--';
     
     if (karat === '21k') {
-      feeText = '60 EGP/gram';
+      // 21k fees based on product size
+      if (quantity >= 8) feeText = '75 EGP/gram';  // Gold Pound
+      else if (quantity >= 4) feeText = '80 EGP/gram';  // Half Pound
+      else feeText = '85 EGP/gram';  // Quarter Pound
+      
+      // Hide 18k custom fee input
+      if (customFee18kGroup) customFee18kGroup.style.display = 'none';
     } else if (karat === '24k') {
-      if (quantity >= 100) feeText = '85 EGP/gram';
-      else if (quantity >= 50) feeText = '85 EGP/gram';
-      else if (quantity >= 20) feeText = '85 EGP/gram';
-      else if (quantity >= 10) feeText = '85 EGP/gram';
+      // 24k fees based on quantity ranges
+      if (quantity >= 100) feeText = '71 EGP/gram';
+      else if (quantity >= 50) feeText = '77 EGP/gram';
+      else if (quantity >= 31.1) feeText = '79 EGP/gram';
+      else if (quantity >= 20) feeText = '80 EGP/gram';
+      else if (quantity >= 10) feeText = '82 EGP/gram';
       else if (quantity >= 5) feeText = '85 EGP/gram';
-      else if (quantity >= 2.5) feeText = '150 EGP/gram';
+      else if (quantity >= 2.5) feeText = '110 EGP/gram';
       else feeText = '185 EGP/gram';
+      
+      // Hide 18k custom fee input
+      if (customFee18kGroup) customFee18kGroup.style.display = 'none';
     } else if (karat === '18k') {
-      feeText = '2% of value';
+      feeText = 'Custom (see below)';
+      
+      // Show 18k custom fee input
+      if (customFee18kGroup) customFee18kGroup.style.display = 'block';
     }
     
     feeValue.textContent = feeText;
@@ -384,6 +427,7 @@ export class UIManagerService implements UIManager {
     moneyAmount?: number;
     preferenceType?: string;
     weightPerPiece?: number;
+    customFee18k?: number;
   } {
     const calcType = (document.querySelector('input[name="calcType"]:checked') as HTMLInputElement)?.value || 'goldToMoney';
     const productSelect = document.getElementById('selectedProduct') as HTMLSelectElement;
@@ -419,6 +463,15 @@ export class UIManagerService implements UIManager {
       
       const prefSelect = document.getElementById('minPieceSize') as HTMLSelectElement;
       result.preferenceType = prefSelect?.value || 'pieces';
+    }
+    
+    // Add custom 18k fee if present
+    if (karat === '18k') {
+      const customFee18kInput = document.getElementById('customFee18k') as HTMLInputElement;
+      const customFeeValue = Number.parseFloat(customFee18kInput?.value || '0');
+      if (customFeeValue > 0) {
+        result.customFee18k = customFeeValue;
+      }
     }
 
     return result;
