@@ -1,184 +1,117 @@
-# BTC Gold Calculator | حاسبة الذهب
+# Gold Calculator — حاسبة الذهب
 
-A modern, feature-rich gold price calculator with Arabic localization and PWA capabilities.
+A mobile-first gold price calculator for the Egyptian market. Fetches live gold prices in Egyptian Pounds (EGP) and lets you convert between a money amount and a gold quantity in either direction. Supports English and Arabic with full RTL layout.
 
-## 🚀 Features
+## Features
 
-### 📱 Mobile-First Design
+**Calculator modes**
 
-- Responsive design optimized for mobile devices
-- Touch-friendly interface
-- Swipe gestures support
-- Fast loading and smooth animations
+- Gold to cash — given a product, quantity, and weight, compute the total buy or sell value including fees.
+- Cash to gold — given a budget, compute how many whole pieces or fractional grams you can buy or sell.
 
-### 🌍 Multilingual Support
+**Gold types supported:** 18K, 21K, 24K. Each karat has its own fee structure. 18K supports a custom fee override; otherwise a 2% default is applied.
 
-- English and Arabic interface
-- RTL (Right-to-Left) layout for Arabic
-- Localized number formatting
-- Cultural-appropriate design elements
+**Prices and data**
 
-### 🎨 Modern UI/UX
+- Live prices fetched from multiple sources in order of preference (see [API sources](#api-sources) below).
+- USD/EGP exchange rate fetched separately and cached for 5 minutes.
+- Last-updated timestamp shown in the header.
+- Manual refresh button.
 
-- Dark/Light theme toggle
-- Beautiful gradients and animations
-- Card-based layout
-- Professional typography with Arabic font support (Cairo)
+**Other**
 
-### 💰 Advanced Calculator Features
+- Calculation history stored in localStorage.
+- Dark and light theme.
+- Installable as a PWA (web app manifest + custom icon).
+- Arabic and English localization including number formatting.
 
-- Real-time price fetching from BTC API
-- Multiple product types (ingots, jewelry, coins)
-- Bulk calculation (weight × quantity)
-- Buy/Sell price comparison
-- Quick calculation buttons on product cards
+## Tech stack
 
-### ⭐ Smart Features
+| Layer | Choice |
+|---|---|
+| Framework | Next.js 15 (App Router) |
+| Language | TypeScript 5 |
+| Styling | Plain CSS with custom properties |
+| Runtime | React 18 |
 
-- **Favorites System**: Save frequently used products
-- **Calculation History**: Track your previous calculations
-- **Price Alerts**: Get notified when prices reach target values
-- **Search & Filter**: Find products quickly
-- **Statistics Dashboard**: Market overview and trends
+No UI library, no CSS framework, no state management library.
 
-### 🔍 Enhanced Product Display
-
-- Comprehensive product grid
-- Category-based filtering (All, Ingots, Jewelry, Coins)
-- Search functionality with multilingual support
-- Favorite products management
-- Real-time price updates
-
-### 📊 Market Information
-
-- Gold and Silver international prices
-- Market statistics (highest/lowest prices)
-- Last updated timestamps
-- Price trend indicators
-
-### 💾 Data Management
-
-- Local storage for user preferences
-- Calculation history persistence
-- Favorites synchronization
-- Alert management
-
-### 🔔 Notifications
-
-- Toast notifications for user feedback
-- Price alert notifications
-- Error handling with user-friendly messages
-- Success confirmations
-
-### 📱 PWA (Progressive Web App)
-
-- Installable on mobile devices
-- Offline functionality with service worker
-- App-like experience
-- Fast loading with caching
-
-### 🎯 Accessibility Features
-
-- Keyboard navigation support
-- Screen reader friendly
-- High contrast ratios
-- Reduced motion support for accessibility
-
-## 🛠 Technical Implementation
-
-### Architecture
-
-- **Class-based JavaScript**: Modern ES6+ syntax
-- **Modular Design**: Separated concerns and functionality
-- **Event-driven**: Reactive UI updates
-- **Local Storage**: Client-side data persistence
-
-### Performance
-
-- **Lazy Loading**: Images and content loaded on demand
-- **Caching Strategy**: Service worker for offline support
-- **Optimized Assets**: Compressed images and minified code
-- **Fast Rendering**: Efficient DOM manipulation
-
-### Browser Support
-
-- Modern browsers (Chrome, Firefox, Safari, Edge)
-- Mobile browsers (iOS Safari, Chrome Mobile)
-- Progressive enhancement for older browsers
-
-## 📦 File Structure
+## Project structure
 
 ```
-├── index.html          # Main HTML structure
-├── style.css           # Enhanced CSS with themes and RTL support
-├── script.js           # Complete JavaScript application
-├── sw.js               # Service Worker for PWA
-├── manifest.json       # Web App Manifest
-├── btc-logo.png            # Application icon
-└── README.md          # This file
+src/
+  app/
+    globals.css          # All styles — design tokens, layout, components
+    layout.tsx           # Root layout, metadata, font loading
+    page.tsx             # Entry point, mounts GoldCalculatorApp
+  components/
+    GoldCalculatorApp.tsx  # Root component, wires everything together
+    AppHeader.tsx          # Market overview, theme/language toggles
+    QuickActions.tsx       # Refresh, history, share buttons
+    CalculatorSection.tsx  # Calculator form and result card
+    ResultCard.tsx         # Formatted result display
+    HistoryModal.tsx       # Slide-up history panel
+    AppFooter.tsx          # Footer links and disclaimer
+  hooks/
+    useGoldCalculator.ts   # All state, effects, and handlers
+  lib/
+    types.ts               # TypeScript interfaces and constants
+    goldApi.ts             # Price fetching with fallback chain
+    calculator.ts          # Calculation logic
+    localization.ts        # Translations and number formatting
+    storage.ts             # localStorage read/write
+public/
+  icon.svg               # App icon (SVG, used for favicon and PWA)
+  manifest.json          # Web app manifest
 ```
 
-## 🔧 Setup and Installation
+## Getting started
 
-1. **Clone or download** the repository
-2. **Serve the files** using any web server (local or remote)
-3. **Access via browser** - the app will work immediately
-4. **Install as PWA** using browser's "Add to Home Screen" option
-
-### Local Development
+**Prerequisites:** Node.js 18 or later.
 
 ```bash
-# Using Python 3
-python -m http.server 8000
+# Install dependencies
+npm install
 
-# Using Node.js
-npx serve .
-
-# Using PHP
-php -S localhost:8000
+# Run the development server
+npm run dev
 ```
 
-## 🎨 Customization
+Open `http://localhost:3000` in your browser.
 
-### Themes
+```bash
+# Type-check without emitting
+npm run type-check
 
-The app supports light and dark themes with CSS custom properties:
-
-```css
-:root {
-  --primary-color: #d4af37; /* Gold color */
-  --background-color: #f8f9fa;
-  --text-primary: #333333;
-  /* ... more variables */
-}
+# Production build
+npm run build
+npm run start
 ```
 
-### Languages
+## API sources
 
-Add new languages by extending the translations object in `script.js`:
+Gold prices are fetched from the following sources in priority order. The app moves to the next source automatically if one fails.
 
-```javascript
-this.translations = {
-  en: {
-    /* English translations */
-  },
-  ar: {
-    /* Arabic translations */
-  },
-  // Add more languages here
-};
-```
+| Priority | Source | Notes |
+|---|---|---|
+| 1 | banklive.net | Scraped HTML via CORS proxy |
+| 2 | Bullion Trading Center (BTC) | JSON endpoint, EGP prices |
+| 3 | Metals-API | Requires an API key |
+| 4 | gold-api.com / metals.live | Free tier, USD converted to EGP |
+| 5 | Static estimate | Last resort, approximate only |
 
-## 🔄 API Integration
+When prices come from a USD-denominated source, the USD/EGP rate is fetched from exchangerate-api.com with a 5-minute cache and a hardcoded fallback of 47.5.
 
-The app fetches real-time data from:
+### BTC API endpoint
 
 ```
 POST https://bulliontradingcenter.com/wp-admin/admin-ajax.php
-Body: action=btc_get_stock_ajax
+Content-Type: application/x-www-form-urlencoded
+
+action=btc_get_stock_ajax
 ```
 
-### Data Structure
+**Response shape:**
 
 ```json
 {
@@ -186,103 +119,31 @@ Body: action=btc_get_stock_ajax
   "data": {
     "obj": {
       "table": [
-        {
-          "id": 153,
-          "name": "5G/24K E",
-          "ask": 31368,
-          "bid": 30880,
-          "formatted_name": "5 Gram Ingot"
-        }
+        { "id": 153, "formatted_name": "21K Gold", "ask": 5200, "bid": 5100 }
       ],
-      "table_heads": {
-        "gold": { "ask": 4031.48 },
-        "silver": { "ask": 48.9 }
-      },
-      "updated_date": "8 October 2025",
-      "updated_time": "4:40 PM"
+      "updated_date": "1 March 2026",
+      "updated_time": "10:00 AM"
     }
   }
 }
 ```
 
-## 📱 Mobile Features
+## Fee logic
 
-### Touch Interactions
+| Karat | Default fee |
+|---|---|
+| 18K | 2% of the product value (overridable with a custom EGP/gram input) |
+| 21K | Fixed per-gram fee defined in `GOLD_PRODUCTS_CONFIG` |
+| 24K | Fixed per-gram fee defined in `GOLD_PRODUCTS_CONFIG` |
 
-- Swipe gestures for navigation
-- Pull-to-refresh for price updates
-- Touch-optimized button sizes
-- Smooth scrolling and animations
+## Privacy
 
-### Performance Optimizations
+All data stays on the device. Calculation history and user preferences are stored in `localStorage` only. No analytics, no tracking.
 
-- Image lazy loading
-- Efficient event handling
-- Minimal DOM manipulation
-- Cached assets for fast loading
+## License
 
-## 🔐 Privacy and Security
+MIT. See [package.json](package.json) for details.
 
-- **No personal data collection**: All data stored locally
-- **Secure HTTPS**: Recommended for production
-- **No tracking**: User privacy respected
-- **Local storage only**: Data never leaves the device
+## Disclaimer
 
-## 🚀 Future Enhancements
-
-### Planned Features
-
-- [ ] Chart integration for price trends
-- [ ] Currency conversion (USD, EUR, etc.)
-- [ ] Export calculations to PDF/Excel
-- [ ] Push notifications for price alerts
-- [ ] Social sharing improvements
-- [ ] More languages (French, Spanish, etc.)
-- [ ] Advanced filtering options
-- [ ] Price prediction algorithms
-- [ ] Integration with more gold markets
-
-### Technical Improvements
-
-- [ ] TypeScript migration
-- [ ] Unit testing suite
-- [ ] E2E testing with Cypress
-- [ ] CI/CD pipeline
-- [ ] Performance monitoring
-- [ ] Error tracking integration
-
-## 📄 License
-
-This project is open source and available under the [MIT License](LICENSE).
-
-## 👥 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-### Development Guidelines
-
-1. Follow existing code style and patterns
-2. Add comments for complex functionality
-3. Test on multiple devices and browsers
-4. Ensure accessibility compliance
-5. Update documentation as needed
-
-## 📞 Support
-
-For support and questions:
-
-- Create an issue on GitHub
-- Contact: [Support Email/Link]
-
-## 🙏 Acknowledgments
-
-- **BTC (Bullion Trading Center)** for providing the API
-- **Font Awesome** for icons
-- **Google Fonts (Cairo)** for Arabic typography
-- **Community contributors** for feedback and suggestions
-
----
-
-**Made with ❤️ for the gold trading community**
-
-_This calculator provides reference prices only. Always verify with official sources before making trading decisions._
+Prices shown are for reference only. Always verify with an official source before making any financial decisions.
