@@ -12,7 +12,7 @@ import {
   ProductBreakdown,
   Gold21kProduct,
   Gold24kProduct
-} from './types.js';
+} from './types';
 
 export class GoldCalculator {
   /**

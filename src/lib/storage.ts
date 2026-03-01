@@ -7,7 +7,7 @@ import {
   Language, 
   Theme,
   RoundingType 
-} from './types.js';
+} from './types';
 
 export class StorageManager implements StorageService {
   private readonly maxHistoryItems: number;
@@ -27,6 +27,7 @@ export class StorageManager implements StorageService {
    */
   getHistory(): HistoryItem[] {
     try {
+      if (typeof localStorage === 'undefined') return [];
       const historyJson = localStorage.getItem(this.storageKeys.history);
       if (!historyJson) return [];
 
@@ -49,6 +50,7 @@ export class StorageManager implements StorageService {
    */
   saveCalculation(calculation: CalculationResult): void {
     try {
+      if (typeof localStorage === 'undefined') return;
       const currentHistory = this.getHistory();
       
       const historyItem: HistoryItem = {
@@ -76,6 +78,7 @@ export class StorageManager implements StorageService {
    */
   clearHistory(): void {
     try {
+      if (typeof localStorage === 'undefined') return;
       localStorage.removeItem(this.storageKeys.history);
     } catch (error) {
       console.error('Failed to clear history:', error);
@@ -87,6 +90,7 @@ export class StorageManager implements StorageService {
    */
   getConfig(): AppConfig {
     try {
+      if (typeof localStorage === 'undefined') return this.getDefaultConfig();
       const configJson = localStorage.getItem(this.storageKeys.config);
       let config: Partial<AppConfig> = {};
       
@@ -117,6 +121,7 @@ export class StorageManager implements StorageService {
    */
   updateConfig(config: Partial<AppConfig>): void {
     try {
+      if (typeof localStorage === 'undefined') return;
       const currentConfig = this.getConfig();
       const updatedConfig = { ...currentConfig, ...config };
 
@@ -143,13 +148,14 @@ export class StorageManager implements StorageService {
    */
   getLanguage(): Language {
     try {
+      if (typeof localStorage === 'undefined') return 'en';
       const saved = localStorage.getItem(this.storageKeys.language) as Language;
       if (saved === 'en' || saved === 'ar') {
         return saved;
       }
       
       // Detect from browser locale
-      const browserLang = navigator.language.toLowerCase();
+      const browserLang = typeof navigator !== 'undefined' ? navigator.language.toLowerCase() : '';
       return browserLang.startsWith('ar') ? 'ar' : 'en';
       
     } catch {
@@ -162,6 +168,7 @@ export class StorageManager implements StorageService {
    */
   setLanguage(language: Language): void {
     try {
+      if (typeof localStorage === 'undefined') return;
       localStorage.setItem(this.storageKeys.language, language);
     } catch (error) {
       console.error('Failed to save language:', error);
@@ -173,13 +180,14 @@ export class StorageManager implements StorageService {
    */
   getTheme(): Theme {
     try {
+      if (typeof localStorage === 'undefined') return 'light';
       const saved = localStorage.getItem(this.storageKeys.theme) as Theme;
       if (saved === 'light' || saved === 'dark') {
         return saved;
       }
       
       // Detect from system preference
-      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      return typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
       
     } catch {
       return 'light';
@@ -191,6 +199,7 @@ export class StorageManager implements StorageService {
    */
   setTheme(theme: Theme): void {
     try {
+      if (typeof localStorage === 'undefined') return;
       localStorage.setItem(this.storageKeys.theme, theme);
     } catch (error) {
       console.error('Failed to save theme:', error);
@@ -245,11 +254,13 @@ export class StorageManager implements StorageService {
         const validHistory = data.history
           .filter(item => this.isValidHistoryItem(item))
           .slice(0, this.maxHistoryItems);
-          
-        localStorage.setItem(
-          this.storageKeys.history, 
-          JSON.stringify(validHistory)
-        );
+        
+        if (typeof localStorage !== 'undefined') {
+          localStorage.setItem(
+            this.storageKeys.history, 
+            JSON.stringify(validHistory)
+          );
+        }
       }
 
       if (data.config) {
@@ -271,6 +282,7 @@ export class StorageManager implements StorageService {
    */
   clearAll(): void {
     try {
+      if (typeof localStorage === 'undefined') return;
       const keysToRemove = Object.values(this.storageKeys);
       for (const key of keysToRemove) {
         localStorage.removeItem(key);
@@ -285,6 +297,7 @@ export class StorageManager implements StorageService {
    */
   getStorageInfo(): { used: number; available: number; percentage: number } {
     try {
+      if (typeof localStorage === 'undefined') return { used: 0, available: 0, percentage: 0 };
       let used = 0;
       
       // Calculate approximate usage for our keys
@@ -323,10 +336,12 @@ export class StorageManager implements StorageService {
       );
 
       if (filteredHistory.length !== history.length) {
-        localStorage.setItem(
-          this.storageKeys.history, 
-          JSON.stringify(filteredHistory)
-        );
+        if (typeof localStorage !== 'undefined') {
+          localStorage.setItem(
+            this.storageKeys.history, 
+            JSON.stringify(filteredHistory)
+          );
+        }
         return history.length - filteredHistory.length; // Number of removed items
       }
 

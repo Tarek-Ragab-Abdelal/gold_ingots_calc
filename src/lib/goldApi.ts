@@ -8,7 +8,7 @@ import {
   ApiResult,
   ApiSource,
   GoldKarat
-} from './types.js';
+} from './types';
 
 export class GoldApiService implements ApiService {
   private goldPrices: GoldProduct[] = [];
@@ -103,6 +103,9 @@ export class GoldApiService implements ApiService {
 
   // Primary API - BankLive (banklive.net)
   private async fetchFromBankLive(): Promise<GoldProduct[]> {
+    if (typeof DOMParser === 'undefined') {
+      throw new ApiError('DOMParser not available (server-side)', 'banklive');
+    }
     const targetUrl = 'https://banklive.net/en/gold-price-today-in-egypt';
     const proxyUrls = [
       `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`,
