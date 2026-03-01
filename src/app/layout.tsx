@@ -18,13 +18,14 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: '#1C1917',
+  viewportFit: 'cover',
 };
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
     <html lang="en" dir="ltr">
       <head>
