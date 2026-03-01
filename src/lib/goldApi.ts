@@ -307,7 +307,8 @@ export class GoldApiService implements ApiService {
 
         // Convert from USD per ounce to USD per gram (if needed)
         let goldPricePerGramUSD: number;
-        if (endpoint.includes('goldapi.io')) {
+        const endpointHost = new URL(endpoint).hostname;
+        if (endpointHost === 'goldapi.io' || endpointHost.endsWith('.goldapi.io')) {
           // goldapi.io returns price per gram
           goldPricePerGramUSD = priceInUSD;
         } else {
@@ -346,8 +347,8 @@ export class GoldApiService implements ApiService {
       const { usdToEgp } = await this.getExchangeRates();
       
       // Use a reasonable estimate for gold price in USD per gram (24K)
-      // This is based on approximate current market rates
-      const estimatedGoldPriceUSD = 77; // Approximately $77 per gram for 24K gold
+      // ~$77/g is an approximate rate valid as of early 2025; verify against live data
+      const estimatedGoldPriceUSD = 77; // Approximately $77 per gram for 24K gold (as of 2025)
       const goldPriceEGP = estimatedGoldPriceUSD * usdToEgp;
 
       console.log(`FreeAPI conversion: $${estimatedGoldPriceUSD}/g * ${usdToEgp.toFixed(2)} EGP/USD = ${goldPriceEGP.toFixed(2)} EGP/g`);
@@ -500,7 +501,7 @@ export class GoldApiService implements ApiService {
 
   // Get current exchange rates with caching and enhanced error handling
   async getExchangeRates(): Promise<{ usdToEgp: number }> {
-    const fallbackRate = 47.5; // fallback rate
+    const fallbackRate = 47.5; // Fallback USD/EGP rate (approximate as of early 2025; live rate fetched below)
     const now = Date.now();
     
     // Check if we have a valid cached rate

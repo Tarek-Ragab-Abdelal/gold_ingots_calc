@@ -33,7 +33,6 @@ export default function GoldCalculatorApp() {
 
   // ── gold data ─────────────────────────────────────────────
   const [goldPrices,    setGoldPrices]    = useState<GoldProduct[]>([]);
-  const [lastUpdated,   setLastUpdated]   = useState<{ date: string; time: string } | null>(null);
   const [exchangeRate,  setExchangeRate]  = useState<number | null>(null);
   const [showApiWarning, setShowApiWarning] = useState(false);
 
@@ -121,7 +120,6 @@ export default function GoldCalculatorApp() {
     try {
       const apiResult = await apiRef.current.fetchPricesWithSource();
       setGoldPrices(apiResult.products);
-      setLastUpdated(apiResult.lastUpdated);
       setShowApiWarning(!apiResult.isAccurate);
 
       // update exchange rate
@@ -302,9 +300,6 @@ export default function GoldCalculatorApp() {
                : selectedProduct.includes('24k') ? '24k'
                : selectedProduct.includes('21k') ? '21k'
                : null;
-
-  // suppress unused warning for lastUpdated
-  void lastUpdated;
 
   return (
     <div className="container">
