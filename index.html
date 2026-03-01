@@ -2,20 +2,24 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Professional gold price calculator with real-time prices and Arabic support">
     <meta name="keywords" content="gold, calculator, prices, BTC, Egypt, Arabic">
-    <meta name="theme-color" content="#D4AF37">
+    <meta name="theme-color" content="#1C1917">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
     <!-- Icons -->
     <link rel="icon" href="./logo.png" sizes="32x32" />
     <link rel="apple-touch-icon" href="./logo.png">
     
     <title>BTC Gold Calculator | حاسبة الذهب</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="new-features.css" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
   </head>
   <body>
     <div class="container">
@@ -24,27 +28,52 @@
         <div class="title-row">
           <div class="title-left">
             <h1 data-en="BTC Gold Calculator" data-ar="حاسبة الذهب BTC">BTC Gold Calculator</h1>
-            <p class="subtitle" data-en="Quick gold value & conversion — Egypt (EGP)" data-ar="حاسب الذهب السريع — مصر (ج.م)">Quick gold value & conversion — Egypt (EGP)</p>
+            <p class="subtitle" data-en="Real-time gold prices — Egypt (EGP)" data-ar="أسعار الذهب اللحظية — مصر (ج.م)">Real-time gold prices — Egypt (EGP)</p>
           </div>
           <div class="title-actions">
-            <button id="languageToggle" class="icon-btn" title="تبديل اللغة">
+            <button id="languageToggle" class="icon-btn" title="تبديل اللغة / Toggle Language" aria-label="Toggle language">
               <i class="fas fa-language"></i>
             </button>
-            <button id="themeToggle" class="icon-btn" title="تبديل المظهر">
+            <button id="themeToggle" class="icon-btn" title="Toggle theme" aria-label="Toggle theme">
               <i class="fas fa-moon"></i>
             </button>
           </div>
         </div>
 
-        <!-- API Warning Area -->
-        <div id="apiWarning" class="api-warning" style="display: none;" aria-live="assertive">
-          <div class="warning-content">
-            <i class="fas fa-exclamation-triangle"></i>
-            <span data-en="Fallback API Warning" data-ar="⚠️ استخدام مصدر أسعار احتياطي - الأسعار قد لا تكون محدثة">⚠️ Using backup price source - prices may not be current</span>
+        <!-- Compact Market Overview -->
+        <div class="market-overview compact" aria-label="Live gold prices" aria-live="polite">
+          <div class="price-card" id="card21k">
+            <div class="card-left">
+              <div class="card-title" data-en="21K Gold" data-ar="ذهب ٢١ قيراط">21K Gold</div>
+              <div class="card-sub" data-en="EGP / gram" data-ar="ج.م / جرام">EGP / gram</div>
+            </div>
+            <div class="card-right">
+              <div class="price-buy" title="Buy price">--</div>
+              <div class="price-sell" title="Sell price">--</div>
+            </div>
+          </div>
+
+          <div class="price-card" id="card24k">
+            <div class="card-left">
+              <div class="card-title" data-en="24K Gold" data-ar="ذهب ٢٤ قيراط">24K Gold</div>
+              <div class="card-sub" data-en="EGP / gram" data-ar="ج.م / جرام">EGP / gram</div>
+            </div>
+            <div class="card-right">
+              <div class="price-buy">--</div>
+              <div class="price-sell">--</div>
+            </div>
           </div>
         </div>
 
-        <!-- Exchange Rate Display -->
+        <!-- API Warning -->
+        <div id="apiWarning" class="api-warning" style="display: none;" aria-live="assertive">
+          <div class="warning-content">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span data-en="Using backup price source — prices may not be current" data-ar="⚠️ استخدام مصدر أسعار احتياطي - الأسعار قد لا تكون محدثة">Using backup price source — prices may not be current</span>
+          </div>
+        </div>
+
+        <!-- Exchange Rate -->
         <div id="exchangeRateDisplay" class="exchange-rate-info" style="display: none;" aria-live="polite">
           <div class="rate-content">
             <i class="fas fa-exchange-alt"></i>
@@ -52,44 +81,18 @@
               <span data-en="USD/EGP:" data-ar="دولار/جنيه:">USD/EGP:</span>
               <span id="exchangeRateValue" class="rate-value">--</span>
             </span>
-            <button id="refreshExchangeRate" class="rate-refresh-btn" title="Refresh exchange rate">
+            <button id="refreshExchangeRate" class="rate-refresh-btn" title="Refresh exchange rate" aria-label="Refresh exchange rate">
               <i class="fas fa-sync-alt"></i>
             </button>
           </div>
-        </div>
-
-        <!-- Compact Market Overview - mobile friendly -->
-        <div class="market-overview compact" aria-live="polite">
-          <!-- Cards will be filled dynamically (21K & 24K emphasized) -->
-          <div class="price-card" id="card21k">
-            <div class="card-left">
-              <div class="card-title" data-en="21K Gold" data-ar="ذهب ٢١ قيراط">21K Gold</div>
-              <div class="card-sub" data-en="EGP / g" data-ar="ج.م / جرام">EGP / g</div>
-            </div>
-            <div class="card-right">
-              <div class="price-buy" title="Buy (you pay)">--</div>
-              <div class="price-sell" title="Sell (you get)">--</div>
-            </div>
-          </div>
-
-          <div class="price-card" id="card24k">
-            <div class="card-left">
-              <div class="card-title" data-en="24K Gold" data-ar="ذهب ٢٤ قيراط">24K Gold</div>
-              <div class="card-sub" data-en="EGP / g" data-ar="ج.م / جرام">EGP / g</div>
-            </div>
-            <div class="card-right">
-              <div class="price-buy">--</div>
-              <div class="price-sell">--</div>
-            </div>
-          </div>  
         </div>
       </header>
 
       <main>
         <!-- Loading Indicator -->
-        <div id="loadingIndicator" class="loading-overlay">
+        <div id="loadingIndicator" class="loading-overlay" role="status" aria-label="Loading">
           <div class="spinner"></div>
-          <p data-en="Loading prices..." data-ar="جاري تحميل الأسعار...">Loading prices...</p>
+          <p data-en="Loading prices…" data-ar="جاري تحميل الأسعار…">Loading prices…</p>
         </div>
 
         <!-- Quick Actions -->
@@ -110,28 +113,28 @@
           </button>
         </div>
 
-        <!-- Calculator Section (mobile-first, feature rich) -->
-        <section class="calculator-section">
+        <!-- Calculator Section -->
+        <section class="calculator-section" aria-label="Gold calculator">
           <h2 data-en="Gold Savings Calculator" data-ar="حاسبة مدخرات الذهب">Gold Savings Calculator</h2>
 
           <div class="calculator-grid">
             <div class="input-group">
               <label for="selectedProduct" data-en="Select Product" data-ar="اختر المنتج">Select Product</label>
               <select id="selectedProduct" aria-label="Select gold product">
-                <option value="" data-en="Choose a product..." data-ar="اختر منتج...">Choose a product...</option>
+                <option value="" data-en="Choose a product…" data-ar="اختر منتج…">Choose a product…</option>
               </select>
             </div>
 
             <div class="calc-type">
               <label data-en="Calculation Type" data-ar="نوع العملية">Calculation Type</label>
-              <div class="radio-group">
+              <div class="radio-group" role="group" aria-label="Calculation type">
                 <label class="radio-label">
                   <input type="radio" name="calcType" value="goldToMoney" checked>
-                  <span data-en="Gold to Money" data-ar="الذهب إلى نقود">Gold to Money</span>
+                  <span data-en="Gold → Money" data-ar="الذهب إلى نقود">Gold → Money</span>
                 </label>
                 <label class="radio-label">
                   <input type="radio" name="calcType" value="moneyToGold">
-                  <span data-en="Money to Gold" data-ar="النقود إلى ذهب">Money to Gold</span>
+                  <span data-en="Money → Gold" data-ar="النقود إلى ذهب">Money → Gold</span>
                 </label>
               </div>
             </div>
@@ -157,31 +160,29 @@
               </div>
 
               <div class="input-group">
-                <label for="minPieceSize" data-en="Prefer whole pieces? (min size)" data-ar="تفضيل قطع كاملة؟">Prefer whole pieces?</label>
+                <label for="minPieceSize" data-en="Preference" data-ar="تفضيل">Preference</label>
                 <select id="minPieceSize">
-                  <option value="pieces" data-en="Whole pieces (e.g., ingots/coins)" data-ar="قطع كاملة (سبائك/عملات)">Whole pieces</option>
-                  <option value="grams" data-en="Allow grams (fractional)" data-ar="السماح بالجرامات">Allow grams</option>
+                  <option value="pieces" data-en="Whole pieces (ingots / coins)" data-ar="قطع كاملة (سبائك/عملات)">Whole pieces</option>
+                  <option value="grams" data-en="Allow fractional grams" data-ar="السماح بالجرامات">Allow grams</option>
                 </select>
               </div>
             </div>
 
-            <!-- 18k Custom Fee Input -->
-            <div class="input-row small-gap" id="custom18kFeeRow" style="display:none;">
+            <!-- 18k Custom Fee -->
+            <div class="input-row" id="custom18kFeeRow" style="display:none;">
               <div class="input-group">
-                <label for="custom18kFee" data-en="18k Custom Fee (EGP/gram)" data-ar="رسوم ١٨ قيراط المخصصة (ج.م/جرام)">18k Custom Fee (EGP/gram)</label>
-                <input type="number" id="custom18kFee" min="0" step="0.01" placeholder="Enter custom fee per gram" inputmode="decimal">
-                <small class="input-note" data-en="Optional: Enter custom fee for 18k gold per gram" data-ar="اختياري: أدخل الرسوم المخصصة لذهب ١٨ قيراط لكل جرام">Optional: Enter custom fee for 18k gold per gram</small>
+                <label for="custom18kFee" data-en="18K Custom Fee (EGP/gram)" data-ar="رسوم ١٨ قيراط المخصصة (ج.م/جرام)">18K Custom Fee (EGP/gram)</label>
+                <input type="number" id="custom18kFee" min="0" step="0.01" placeholder="Optional" inputmode="decimal">
+                <small class="input-note" data-en="Optional — leave blank to use 2% of value" data-ar="اختياري — اتركه فارغاً لاستخدام 2% من القيمة">Optional — leave blank to use 2% of value</small>
               </div>
             </div>
 
-            <!-- Auto fees and options -->
-            <div class="input-row small-gap">
-              <div class="input-group">
-                <label for="autoFeeDisplay" data-en="Auto Fee" data-ar="رسوم تلقائية">Auto Fee</label>
-                <div class="fee-display" id="autoFeeDisplay">
-                  <span class="fee-value">--</span>
-                  <small class="fee-note" data-en="Fee automatically calculated" data-ar="الرسوم محسوبة تلقائياً حسب نوع الذهب">Fee automatically calculated based on gold type</small>
-                </div>
+            <!-- Auto Fee -->
+            <div class="input-group">
+              <label for="autoFeeDisplay" data-en="Auto Fee" data-ar="رسوم تلقائية">Auto Fee</label>
+              <div class="fee-display" id="autoFeeDisplay" aria-live="polite">
+                <span class="fee-value">--</span>
+                <small class="fee-note" data-en="Automatically calculated per gold type" data-ar="محسوب تلقائياً حسب نوع الذهب">Automatically calculated per gold type</small>
               </div>
             </div>
 
@@ -191,7 +192,7 @@
                 <span data-en="Calculate" data-ar="احسب">Calculate</span>
               </button>
               <button id="saveCalcBtn" class="calculate-btn secondary">
-                <i class="fas fa-save"></i>
+                <i class="fas fa-bookmark"></i>
                 <span data-en="Save" data-ar="حفظ">Save</span>
               </button>
             </div>
@@ -203,7 +204,10 @@
               <h3 data-en="Calculation Results" data-ar="نتائج الحساب">Calculation Results</h3>
               <div class="result-details"></div>
               <div class="result-actions">
-                <button id="copyResultBtn" class="action-btn"><i class="fas fa-copy"></i> <span data-en="Copy" data-ar="نسخ">Copy</span></button>
+                <button id="copyResultBtn" class="action-btn">
+                  <i class="fas fa-copy"></i>
+                  <span data-en="Copy" data-ar="نسخ">Copy</span>
+                </button>
               </div>
             </div>
           </div>
@@ -211,35 +215,33 @@
 
         <!-- Footer -->
         <footer class="app-footer">
-          <div class="support-section">
-            <h3 data-en="Support Me" data-ar="ادعم المطور">ادعم المطور</h3>
-            <div class="support-buttons">
-              <a href="https://www.buymeacoffee.com/tarekragab" class="support-btn coffee">
-                <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" width="120" alt="Buy Me A Coffee">
-              </a>
-              <a href="https://www.ko-fi.com/tarekragab" class="support-btn kofi">
-                <img src="https://storage.ko-fi.com/cdn/kofi2.png?v=3" width="120" alt="Ko-fi">
-              </a>
-            </div>
+          <h3 data-en="Support the Developer" data-ar="ادعم المطور">Support the Developer</h3>
+          <div class="support-buttons">
+            <a href="https://www.buymeacoffee.com/tarekragab" class="support-btn coffee" aria-label="Buy Me A Coffee">
+              <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" width="120" alt="Buy Me A Coffee">
+            </a>
+            <a href="https://www.ko-fi.com/tarekragab" class="support-btn kofi" aria-label="Ko-fi">
+              <img src="https://storage.ko-fi.com/cdn/kofi2.png?v=3" width="120" alt="Ko-fi">
+            </a>
           </div>
           
           <div class="footer-info">
-            <p data-en="© 2025 All rights reserved." data-ar="© 2025 جميع الحقوق محفوظة.">© 2025 حاسبة الذهب BTC. جميع الحقوق محفوظة.</p>
-            <p class="disclaimer" data-en="Prices are for reference only. Please verify with official sources." data-ar="الأسعار للمرجع فقط. يرجى التحقق من المصادر الرسمية.">الأسعار للمرجع فقط. يرجى التحقق من المصادر الرسمية.</p>
+            <p data-en="© 2025 BTC Gold Calculator. All rights reserved." data-ar="© 2025 حاسبة الذهب BTC. جميع الحقوق محفوظة.">© 2025 BTC Gold Calculator. All rights reserved.</p>
+            <p class="disclaimer" data-en="Prices are for reference only. Verify with official sources." data-ar="الأسعار للمرجع فقط. يرجى التحقق من المصادر الرسمية.">Prices are for reference only. Verify with official sources.</p>
           </div>
         </footer>
       </main>
     </div>
 
     <!-- Toast Notifications -->
-    <div id="toastContainer" class="toast-container"></div>
+    <div id="toastContainer" class="toast-container" aria-live="polite" aria-atomic="true"></div>
 
     <!-- History Modal -->
-    <div id="historyModal" class="modal">
+    <div id="historyModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="historyModalTitle">
       <div class="modal-content">
         <div class="modal-header">
-          <h2 data-en="Calculation History" data-ar="تاريخ العمليات الحسابية">Calculation History</h2>
-          <button class="modal-close">
+          <h2 id="historyModalTitle" data-en="Calculation History" data-ar="تاريخ العمليات الحسابية">Calculation History</h2>
+          <button class="modal-close" aria-label="Close">
             <i class="fas fa-times"></i>
           </button>
         </div>
