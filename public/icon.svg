@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- App-brand dark rounded-square background -->
+  <rect width="32" height="32" rx="7" fill="#1C1917"/>
+
+  <!-- Gold ingot — body (darker mid-gold, visible as front face + sides) -->
+  <rect x="4" y="12" width="24" height="12" rx="3" fill="#B45309"/>
+
+  <!-- Gold ingot — top face (bright gold, light catches here) -->
+  <rect x="4" y="9" width="24" height="7" rx="3" fill="#F59E0B"/>
+
+  <!-- Blend the bottom rounded corners of the top face so it meets the body cleanly -->
+  <rect x="4" y="13" width="24" height="3" fill="#F59E0B"/>
+
+  <!-- Metallic shine — long glint across the top face -->
+  <rect x="7" y="11" width="11" height="2" rx="1" fill="#FEF3C7" opacity="0.65"/>
+
+  <!-- Subtle depth shadow at the very bottom of the ingot -->
+  <rect x="5" y="21" width="22" height="2.5" rx="1.25" fill="#78350F" opacity="0.6"/>
+</svg>

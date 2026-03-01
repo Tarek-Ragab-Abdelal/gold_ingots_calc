@@ -114,7 +114,7 @@ A modern, feature-rich gold price calculator with Arabic localization and PWA ca
 ├── script.js           # Complete JavaScript application
 ├── sw.js               # Service Worker for PWA
 ├── manifest.json       # Web App Manifest
-├── logo.png            # Application icon
+├── btc-logo.png            # Application icon
 └── README.md          # This file
 ```
 
