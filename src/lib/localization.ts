@@ -1,5 +1,5 @@
 // Localization service for the Gold Calculator App
-import { Language, LocalizationData } from './types.js';
+import { Language, LocalizationData } from './types';
 
 export class LocalizationService {
   private currentLanguage: Language;
@@ -230,29 +230,6 @@ export class LocalizationService {
     return this.currentLanguage === 'ar';
   }
 
-  applyToDOM(): void {
-    const htmlElement = document.documentElement;
-    htmlElement.setAttribute('lang', this.currentLanguage);
-    htmlElement.setAttribute('dir', this.isRTL() ? 'rtl' : 'ltr');
-
-    // Update all translatable elements
-    const elements = document.querySelectorAll('[data-en]');
-    for (const element of elements) {
-      const htmlEl = element as HTMLElement;
-      const en = htmlEl.dataset.en;
-      const ar = htmlEl.dataset.ar;
-      
-      if (this.currentLanguage === 'ar' && ar) {
-        htmlEl.textContent = ar;
-      } else if (en) {
-        htmlEl.textContent = en;
-      }
-    }
-
-    // Update placeholders
-    this.updatePlaceholders();
-  }
-
   private updateNumberFormatter(): void {
     const locale = this.currentLanguage === 'ar' ? 'ar-EG' : 'en-EG';
     this.numberFormatter = new Intl.NumberFormat(locale, {
@@ -260,22 +237,6 @@ export class LocalizationService {
       currency: 'EGP',
       minimumFractionDigits: 2,
     });
-  }
-
-  private updatePlaceholders(): void {
-    const placeholders = [
-      { id: 'quantity', en: 'Enter quantity', ar: 'أدخل الكمية' },
-      { id: 'moneyAmount', en: 'Enter amount', ar: 'أدخل المبلغ' },
-      { id: 'feePercent', en: '0.00', ar: '0.00' },
-      { id: 'weightPerPiece', en: 'Auto for ingots', ar: 'تلقائي للسبائك' }
-    ];
-
-    for (const p of placeholders) {
-      const el = document.getElementById(p.id) as HTMLInputElement;
-      if (el) {
-        el.placeholder = this.currentLanguage === 'ar' ? p.ar : p.en;
-      }
-    }
   }
 
   private toArabicNumerals(num: string): string {

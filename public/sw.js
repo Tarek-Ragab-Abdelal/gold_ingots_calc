@@ -1,10 +1,7 @@
 // Service Worker for BTC Gold Calculator PWA
-const CACHE_NAME = 'btc-gold-calc-v1';
+const CACHE_NAME = 'btc-gold-calc-v2';
 const urlsToCache = [
   '/',
-  '/index.html',
-  '/style.css',
-  '/script.js',
   '/logo.png',
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
   'https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800&display=swap'
