@@ -4,7 +4,7 @@ export class GoldApiService {
     constructor(apiKeys = {}) {
         this.goldPrices = [];
         this.lastUpdated = null;
-        this.currentSource = 'btc';
+        this.currentSource = 'banklive';
         // Exchange rate caching
         this.cachedExchangeRate = null;
         this.EXCHANGE_RATE_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
@@ -20,6 +20,7 @@ export class GoldApiService {
     }
     async fetchPrices() {
         const strategies = [
+            { source: 'banklive', fetch: () => this.fetchFromBankLive() },
             { source: 'btc', fetch: () => this.fetchFromBTC() },
             { source: 'metals-api', fetch: () => this.fetchFromMetalsApi() },
             { source: 'gold-api', fetch: () => this.fetchFromGoldApiIO() },
@@ -56,7 +57,7 @@ export class GoldApiService {
             products,
             source: this.currentSource,
             lastUpdated: this.lastUpdated || { date: fallbackDate, time: fallbackTime },
-            isAccurate: this.currentSource === 'btc' // Only BTC is considered fully accurate
+            isAccurate: this.currentSource === 'banklive' || this.currentSource === 'btc'
         };
     }
     getCurrentSource() {
@@ -71,7 +72,76 @@ export class GoldApiService {
     getCachedPrices() {
         return [...this.goldPrices];
     }
-    // Primary API - BTC (Bullion Trading Center)
+    // Primary API - BankLive (banklive.net)
+    async fetchFromBankLive() {
+        const targetUrl = 'https://banklive.net/en/gold-price-today-in-egypt';
+        const proxyUrls = [
+            `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`,
+            `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`
+        ];
+        let html = null;
+        // Try direct fetch first (works if CORS is allowed by the server)
+        try {
+            const directResponse = await fetch(targetUrl);
+            if (directResponse.ok) {
+                html = await directResponse.text();
+            }
+        }
+        catch {
+            // Direct fetch failed due to CORS; will try proxies below
+        }
+        // Fall back to CORS proxies if needed
+        if (!html) {
+            for (const proxyUrl of proxyUrls) {
+                try {
+                    const response = await fetch(proxyUrl);
+                    if (!response.ok)
+                        continue;
+                    // allorigins.win wraps the response in a JSON object
+                    if (proxyUrl.includes('allorigins.win')) {
+                        const proxyData = await response.json();
+                        html = proxyData.contents || null;
+                    }
+                    else {
+                        html = await response.text();
+                    }
+                    if (html)
+                        break;
+                }
+                catch {
+                    continue;
+                }
+            }
+        }
+        if (!html) {
+            throw new ApiError('BankLive: Could not fetch page through any method', 'banklive');
+        }
+        // Parse the HTML and extract gold price using XPath //table//tr[2]/td[2]
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        // XPath targets the second cell of the second row in the first table,
+        // which contains the 24K gold price per gram in EGP on banklive.net
+        const xpathResult = doc.evaluate('//table//tr[2]/td[2]', doc, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+        const cell = xpathResult.singleNodeValue;
+        if (!cell || !cell.textContent) {
+            throw new ApiError('BankLive: Could not find gold price cell in page', 'banklive');
+        }
+        const priceText = cell.textContent.trim();
+        const priceMatch = priceText.match(/[\d,]+(?:\.\d+)?/);
+        if (!priceMatch) {
+            throw new ApiError(`BankLive: Could not parse price from: "${priceText}"`, 'banklive');
+        }
+        const goldPrice24K = parseFloat(priceMatch[0].replace(/,/g, ''));
+        if (isNaN(goldPrice24K) || goldPrice24K <= 0) {
+            throw new ApiError(`BankLive: Invalid price value: ${goldPrice24K}`, 'banklive');
+        }
+        this.lastUpdated = {
+            date: new Date().toLocaleDateString(),
+            time: new Date().toLocaleTimeString()
+        };
+        return this.createStandardProducts(goldPrice24K);
+    }
+    // Secondary API - BTC (Bullion Trading Center)
     async fetchFromBTC() {
         const response = await fetch("https://bulliontradingcenter.com/wp-admin/admin-ajax.php", {
             method: "POST",
@@ -409,6 +479,7 @@ export class GoldApiService {
     async testAllApis() {
         const results = {};
         const tests = [
+            { name: 'banklive', fn: () => this.fetchFromBankLive() },
             { name: 'btc', fn: () => this.fetchFromBTC() },
             { name: 'metals_api', fn: () => this.fetchFromMetalsApi() },
             { name: 'gold_api_io', fn: () => this.fetchFromGoldApiIO() },

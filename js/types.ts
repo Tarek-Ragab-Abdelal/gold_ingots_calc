@@ -7,7 +7,7 @@ export type PreferenceType = 'pieces' | 'grams';
 export type RoundingType = 'none' | '0.01' | '1';
 export type ToastType = 'info' | 'success' | 'warning' | 'error';
 export type GoldKarat = '18k' | '21k' | '24k';
-export type ApiSource = 'btc' | 'metals-api' | 'gold-api' | 'fallback';
+export type ApiSource = 'banklive' | 'btc' | 'metals-api' | 'gold-api' | 'fallback';
 
 // Gold product interface with karat-based structure
 export interface GoldProduct {
