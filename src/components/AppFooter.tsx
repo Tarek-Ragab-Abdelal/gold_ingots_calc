@@ -48,6 +48,17 @@ export default function AppFooter({ language }: Readonly<Props>) {
             ? '© 2025 حاسبة الذهب BTC. جميع الحقوق محفوظة.'
             : '© 2025 BTC Gold Calculator. All rights reserved.'}
         </p>
+        <p>
+          {ar ? 'بواسطة ' : 'Created by '}
+          <a
+            href="https://TarekRagab.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Tarek Ragab (opens in new tab)"
+          >
+            Tarek Ragab
+          </a>
+        </p>
         <p className="disclaimer">
           {ar
             ? 'الأسعار للمرجع فقط. يرجى التحقق من المصادر الرسمية.'
