@@ -21,14 +21,42 @@ export const viewport: Viewport = {
   viewportFit: 'cover',
 };
 
+// Inline script that runs before React hydration to apply the correct language
+// direction immediately, preventing a flash of wrong layout for Arabic users.
+// Logic mirrors StorageManager.getLanguage(): saved preference wins, then
+// navigator.languages / navigator.language are used as fallback.
+const langDetectScript = `
+(function () {
+  try {
+    var saved = localStorage.getItem('language');
+    if (saved === 'ar') {
+      document.documentElement.setAttribute('lang', 'ar');
+      document.documentElement.setAttribute('dir', 'rtl');
+      return;
+    }
+    if (saved === 'en') return;
+    var langs = (navigator.languages && navigator.languages.length)
+      ? Array.from(navigator.languages)
+      : [navigator.language || ''];
+    var isArabic = langs.some(function (l) { return l && l.toLowerCase().startsWith('ar'); });
+    if (isArabic) {
+      document.documentElement.setAttribute('lang', 'ar');
+      document.documentElement.setAttribute('dir', 'rtl');
+    }
+  } catch (e) {}
+})();
+`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" dir="ltr">
+    <html lang="en" dir="ltr" suppressHydrationWarning>
       <head>
+        {/* Runs synchronously before render to set correct lang/dir for RTL users */}
+        <script dangerouslySetInnerHTML={{ __html: langDetectScript }} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link

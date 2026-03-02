@@ -154,9 +154,11 @@ export class StorageManager implements StorageService {
         return saved;
       }
       
-      // Detect from browser locale
-      const browserLang = typeof navigator !== 'undefined' ? navigator.language.toLowerCase() : '';
-      return browserLang.startsWith('ar') ? 'ar' : 'en';
+      // Detect from browser locale, checking all preferred languages
+      const browserLangs = typeof navigator !== 'undefined'
+        ? (navigator.languages?.length ? Array.from(navigator.languages) : [navigator.language])
+        : [];
+      return browserLangs.some(l => l?.toLowerCase().startsWith('ar')) ? 'ar' : 'en';
       
     } catch {
       return 'en';
