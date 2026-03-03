@@ -20,6 +20,9 @@ export class GoldApiService implements ApiService {
   private cachedExchangeRate: { rate: number; timestamp: number } | null = null;
   private readonly EXCHANGE_RATE_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
+  // Gold prices localStorage cache key
+  private readonly GOLD_PRICES_STORAGE_KEY = 'goldPricesCache';
+
   constructor(apiKeys: { [key: string]: string } = {}) {
     this.apiKeys = apiKeys;
     // Initialize with current time to avoid "Invalid Date" issues
@@ -50,6 +53,7 @@ export class GoldApiService implements ApiService {
         if (prices.length > 0) {
           this.goldPrices = prices;
           this.currentSource = strategy.source;
+          this.storePrices();
           return prices;
         }
       } catch (error) {
@@ -99,6 +103,31 @@ export class GoldApiService implements ApiService {
 
   getCachedPrices(): GoldProduct[] {
     return [...this.goldPrices];
+  }
+
+  /** Retrieve gold prices persisted in localStorage from the previous session. */
+  getStoredPrices(): { products: GoldProduct[]; timestamp: number } | null {
+    try {
+      if (typeof localStorage === 'undefined') return null;
+      const raw = localStorage.getItem(this.GOLD_PRICES_STORAGE_KEY);
+      if (!raw) return null;
+      return JSON.parse(raw) as { products: GoldProduct[]; timestamp: number };
+    } catch {
+      return null;
+    }
+  }
+
+  /** Persist the current in-memory gold prices to localStorage. */
+  private storePrices(): void {
+    try {
+      if (typeof localStorage === 'undefined') return;
+      localStorage.setItem(
+        this.GOLD_PRICES_STORAGE_KEY,
+        JSON.stringify({ products: this.goldPrices, timestamp: Date.now() }),
+      );
+    } catch {
+      // Storage quota exceeded or private-browsing restriction — fail silently.
+    }
   }
 
   // Primary API - BankLive (banklive.net)

@@ -36,8 +36,9 @@ export function useGoldCalculator() {
   const [showApiWarning, setShowApiWarning] = useState(false);
 
   // loading
-  const [loading,    setLoading]    = useState(false);
-  const [loadingMsg, setLoadingMsg] = useState('');
+  const [loading,          setLoading]          = useState(false);
+  const [loadingMsg,       setLoadingMsg]       = useState('');
+  const [isFetchingFresh,  setIsFetchingFresh]  = useState(false);
 
   // form
   const [calcType,        setCalcType]        = useState<'goldToMoney' | 'moneyToGold'>('goldToMoney');
@@ -79,6 +80,13 @@ export function useGoldCalculator() {
     setLanguage(cfg.language);
     setTheme(cfg.theme);
     locRef.current.setLanguage(cfg.language);
+
+    // Immediately populate with last-known prices so the UI is usable
+    // while fresh prices are being fetched in the background.
+    const stored = apiRef.current.getStoredPrices();
+    if (stored && stored.products.length > 0) {
+      setGoldPrices(stored.products);
+    }
   }, []);
 
   useEffect(() => {
@@ -94,8 +102,19 @@ export function useGoldCalculator() {
   // ── data fetching ─────────────────────────────────────────
   const fetchPrices = useCallback(async (isRefresh = false) => {
     if (!apiRef.current) return;
-    setLoadingMsg(isRefresh ? loc.translate('Refreshing data...') : loc.translate('Loading prices...'));
-    setLoading(true);
+
+    // Use the API ref to check for cached data without adding goldPrices to deps
+    const hasCached = (apiRef.current.getStoredPrices()?.products.length ?? 0) > 0
+                   || apiRef.current.getCachedPrices().length > 0;
+
+    if (hasCached) {
+      // Background refresh: don't block the UI with the full-screen overlay
+      setIsFetchingFresh(true);
+    } else {
+      setLoadingMsg(isRefresh ? loc.translate('Refreshing data...') : loc.translate('Loading prices...'));
+      setLoading(true);
+    }
+
     try {
       const apiResult = await apiRef.current.fetchPricesWithSource();
       setGoldPrices(apiResult.products);
@@ -108,7 +127,7 @@ export function useGoldCalculator() {
         const { usdToEgp } = await apiRef.current.getExchangeRates();
         setExchangeRate(usdToEgp);
       }
-      showToast(loc.translate('Prices updated successfully'), 'success');
+      if (isRefresh) showToast(loc.translate('Prices updated successfully'), 'success');
     } catch (err) {
       console.error(err);
       let msg = loc.translate('Error fetching prices');
@@ -118,6 +137,7 @@ export function useGoldCalculator() {
       showToast(msg, 'error');
     } finally {
       setLoading(false);
+      setIsFetchingFresh(false);
     }
   }, [loc, showToast]);
 
@@ -268,7 +288,9 @@ export function useGoldCalculator() {
 
   return {
     // ui state
-    language, theme, toasts, loading, loadingMsg,
+    language, theme, toasts, loading, loadingMsg, isFetchingFresh,
+    // Centralised flag: show blocking overlay only when there are no prices at all
+    shouldShowFullScreenLoader: loading && goldPrices.length === 0,
     // gold data
     goldPrices, exchangeRate, showApiWarning,
     // form state

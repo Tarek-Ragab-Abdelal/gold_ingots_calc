@@ -11,14 +11,15 @@ export default function GoldCalculatorApp() {
   const s = useGoldCalculator();
 
   return (
-    <>
-      {/* ── Header (full-width, outside padded container) ── */}
+    <div className="app-layout">
+      {/* ── Header / desktop sidebar ── */}
       <AppHeader
         language={s.language}
         theme={s.theme}
         goldPrices={s.goldPrices}
         exchangeRate={s.exchangeRate}
         showApiWarning={s.showApiWarning}
+        isFetchingFresh={s.isFetchingFresh}
         loc={s.loc}
         onToggleLanguage={s.toggleLanguage}
         onToggleTheme={s.toggleTheme}
@@ -28,7 +29,8 @@ export default function GoldCalculatorApp() {
       {/* ── Main content ── */}
       <div className="container">
         <main>
-          {s.loading && (
+          {/* Full-screen loading only when there are no cached prices to show */}
+          {s.shouldShowFullScreenLoader && (
             <div className="loading-overlay show" role="status" aria-label="Loading">
               <div className="spinner" />
               <p>
@@ -90,6 +92,6 @@ export default function GoldCalculatorApp() {
         loc={s.loc}
         onClose={() => s.setShowHistory(false)}
       />
-    </>
+    </div>
   );
 }

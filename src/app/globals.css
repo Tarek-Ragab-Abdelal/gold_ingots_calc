@@ -1151,3 +1151,171 @@ select:focus:not(:focus-visible) { outline: none; }
   from { opacity: 0; transform: translateY(-5px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+
+/* --------------------------------------------------
+   Prices-refreshing indicator (in header)
+   -------------------------------------------------- */
+.prices-refreshing {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  margin-top: var(--space-8);
+  padding: var(--space-6) var(--space-12);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.prices-refreshing i { font-size: 0.7rem; flex-shrink: 0; }
+
+/* =====================================================
+   Desktop Layout — two-column sidebar (≥ 1024 px)
+   ===================================================== */
+@media (min-width: 1024px) {
+
+  /* ── outer grid ── */
+  .app-layout {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    min-height: 100vh;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  /* ── sidebar (was the mobile header) ── */
+  .app-header {
+    border-radius: 0 var(--radius-xl) var(--radius-xl) 0;
+    margin-bottom: 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    padding:
+      var(--space-32)
+      var(--space-24)
+      var(--space-32)
+      var(--space-24);
+  }
+
+  /* Spread market cards to fill vertical space nicely */
+  .market-overview.compact {
+    grid-template-columns: 1fr;  /* stack cards in the narrow sidebar */
+    gap: var(--space-8);
+    margin-top: var(--space-20);
+  }
+
+  /* Price card in sidebar: horizontal layout (label left, price right) */
+  .price-card {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-14) var(--space-16);
+  }
+
+  .price-card .card-left {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+  }
+
+  .card-right { align-items: flex-end; }
+
+  /* Header title/subtitle sizes on desktop */
+  .title-left h1        { font-size: 1.45rem; }
+  .title-left .subtitle { font-size: 0.8rem; }
+
+  /* Spacing after exchange-rate strip */
+  .exchange-rate-info,
+  .api-warning { margin-top: var(--space-12); }
+
+  /* ── main content area ── */
+  .container {
+    padding: var(--space-32) var(--space-32) var(--space-32);
+    max-width: none;
+  }
+
+  main { gap: var(--space-20); }
+
+  /* Quick-actions bar: space out buttons on wide screens */
+  .quick-actions {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  /* Calculator section: slightly wider form fields */
+  .input-row { grid-template-columns: 1fr 1fr; }
+
+  /* Footer: horizontal layout on desktop */
+  .app-footer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-24);
+    text-align: start;
+  }
+
+  [dir="rtl"] .app-footer { text-align: end; }
+
+  .app-footer h3 { margin: 0; white-space: nowrap; }
+
+  .support-buttons {
+    margin-bottom: 0;
+    flex-wrap: nowrap;
+  }
+
+  .footer-info {
+    text-align: end;
+    flex: 1;
+  }
+
+  [dir="rtl"] .footer-info { text-align: start; }
+}
+
+/* ── RTL mirror for desktop sidebar ── */
+[dir="rtl"] .app-layout {
+  grid-template-columns: 1fr 300px;
+}
+
+[dir="rtl"] .app-header {
+  border-radius: var(--radius-xl) 0 0 var(--radius-xl);
+  order: 2;
+}
+
+[dir="rtl"] .container { order: 1; }
+
+/* ── Very wide screens (≥ 1400 px): add outer padding so content doesn't
+   touch the browser edge when the 1400 px max-width is reached ── */
+@media (min-width: 1400px) {
+  body {
+    background: var(--bg-secondary);
+  }
+
+  .app-layout {
+    box-shadow: 0 0 60px rgba(0, 0, 0, 0.18);
+    border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+    overflow: hidden;
+  }
+}
+
+/* =====================================================
+   Footer — mobile improvements
+   ===================================================== */
+@media (max-width: 1023px) {
+  .app-footer {
+    padding: var(--space-20) var(--space-16);
+  }
+
+  .support-buttons {
+    gap: var(--space-8);
+  }
+
+  .support-btn img {
+    width: 110px;
+    height: auto;
+  }
+}

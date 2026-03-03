@@ -7,6 +7,7 @@ interface Props {
   goldPrices: GoldProduct[];
   exchangeRate: number | null;
   showApiWarning: boolean;
+  isFetchingFresh: boolean;
   loc: LocalizationService;
   onToggleLanguage: () => void;
   onToggleTheme: () => void;
@@ -19,6 +20,7 @@ export default function AppHeader({
   goldPrices,
   exchangeRate,
   showApiWarning,
+  isFetchingFresh,
   loc,
   onToggleLanguage,
   onToggleTheme,
@@ -90,6 +92,14 @@ export default function AppHeader({
           </div>
         </div>
       </div>
+
+      {/* Prices-refreshing indicator */}
+      {isFetchingFresh && (
+        <div className="prices-refreshing" aria-live="polite">
+          <i className="fas fa-sync-alt fa-spin" aria-hidden="true" />
+          <span>{ar ? 'جاري تحديث الأسعار…' : 'Updating prices…'}</span>
+        </div>
+      )}
 
       {/* API accuracy warning */}
       {showApiWarning && (
