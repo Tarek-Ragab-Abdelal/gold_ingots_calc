@@ -103,7 +103,9 @@ export function useGoldCalculator() {
   const fetchPrices = useCallback(async (isRefresh = false) => {
     if (!apiRef.current) return;
 
-    const hasCached = apiRef.current.getStoredPrices() !== null || goldPrices.length > 0;
+    // Use the API ref to check for cached data without adding goldPrices to deps
+    const hasCached = (apiRef.current.getStoredPrices()?.products.length ?? 0) > 0
+                   || apiRef.current.getCachedPrices().length > 0;
 
     if (hasCached) {
       // Background refresh: don't block the UI with the full-screen overlay
@@ -137,7 +139,7 @@ export function useGoldCalculator() {
       setLoading(false);
       setIsFetchingFresh(false);
     }
-  }, [loc, showToast, goldPrices.length]);
+  }, [loc, showToast]);
 
   useEffect(() => {
     fetchPrices();
@@ -287,6 +289,8 @@ export function useGoldCalculator() {
   return {
     // ui state
     language, theme, toasts, loading, loadingMsg, isFetchingFresh,
+    // Centralised flag: show blocking overlay only when there are no prices at all
+    shouldShowFullScreenLoader: loading && goldPrices.length === 0,
     // gold data
     goldPrices, exchangeRate, showApiWarning,
     // form state

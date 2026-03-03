@@ -30,7 +30,7 @@ export default function GoldCalculatorApp() {
       <div className="container">
         <main>
           {/* Full-screen loading only when there are no cached prices to show */}
-          {s.loading && s.goldPrices.length === 0 && (
+          {s.shouldShowFullScreenLoader && (
             <div className="loading-overlay show" role="status" aria-label="Loading">
               <div className="spinner" />
               <p>
