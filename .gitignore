@@ -28,3 +28,9 @@ Thumbs.db
 # Next.js
 .next/
 out/
+
+# TypeScript build info
+tsconfig.tsbuildinfo
+
+# ESLint config (auto-generated)
+.eslintrc.json
