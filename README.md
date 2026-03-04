@@ -1,3 +1,5 @@
+> App can be found here [gold.tarekragab.com]()
+
 # Gold Calculator — حاسبة الذهب
 
 A mobile-first gold price calculator for the Egyptian market. Fetches live gold prices in Egyptian Pounds (EGP) and lets you convert between a money amount and a gold quantity in either direction. Supports English and Arabic with full RTL layout.
@@ -27,12 +29,12 @@ A mobile-first gold price calculator for the Egyptian market. Fetches live gold 
 
 ## Tech stack
 
-| Layer | Choice |
-|---|---|
-| Framework | Next.js 15 (App Router) |
-| Language | TypeScript 5 |
-| Styling | Plain CSS with custom properties |
-| Runtime | React 18 |
+| Layer     | Choice                           |
+| --------- | -------------------------------- |
+| Framework | Next.js 15 (App Router)          |
+| Language  | TypeScript 5                     |
+| Styling   | Plain CSS with custom properties |
+| Runtime   | React 18                         |
 
 No UI library, no CSS framework, no state management library.
 
@@ -92,13 +94,13 @@ npm run start
 
 Gold prices are fetched from the following sources in priority order. The app moves to the next source automatically if one fails.
 
-| Priority | Source | Notes |
-|---|---|---|
-| 1 | banklive.net | Scraped HTML via CORS proxy |
-| 2 | Bullion Trading Center (BTC) | JSON endpoint, EGP prices |
-| 3 | Metals-API | Requires an API key |
-| 4 | gold-api.com / metals.live | Free tier, USD converted to EGP |
-| 5 | Static estimate | Last resort, approximate only |
+| Priority | Source                       | Notes                           |
+| -------- | ---------------------------- | ------------------------------- |
+| 1        | banklive.net                 | Scraped HTML via CORS proxy     |
+| 2        | Bullion Trading Center (BTC) | JSON endpoint, EGP prices       |
+| 3        | Metals-API                   | Requires an API key             |
+| 4        | gold-api.com / metals.live   | Free tier, USD converted to EGP |
+| 5        | Static estimate              | Last resort, approximate only   |
 
 When prices come from a USD-denominated source, the USD/EGP rate is fetched from exchangerate-api.com with a 5-minute cache and a hardcoded fallback of 47.5.
 
@@ -130,11 +132,11 @@ action=btc_get_stock_ajax
 
 ## Fee logic
 
-| Karat | Default fee |
-|---|---|
-| 18K | 2% of the product value (overridable with a custom EGP/gram input) |
-| 21K | Fixed per-gram fee defined in `GOLD_PRODUCTS_CONFIG` |
-| 24K | Fixed per-gram fee defined in `GOLD_PRODUCTS_CONFIG` |
+| Karat | Default fee                                                        |
+| ----- | ------------------------------------------------------------------ |
+| 18K   | 2% of the product value (overridable with a custom EGP/gram input) |
+| 21K   | Fixed per-gram fee defined in `GOLD_PRODUCTS_CONFIG`               |
+| 24K   | Fixed per-gram fee defined in `GOLD_PRODUCTS_CONFIG`               |
 
 ## Privacy
 
@@ -143,6 +145,8 @@ All data stays on the device. Calculation history and user preferences are store
 ## License
 
 MIT. See [package.json](package.json) for details.
+
+> This is developed and maintained by [Tarek Ragab](TarekRagab.com "Portfolio")
 
 ## Disclaimer
 
