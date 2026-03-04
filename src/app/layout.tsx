@@ -2,17 +2,58 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'BTC Gold Calculator | حاسبة الذهب',
-  description: 'Professional gold price calculator with real-time prices and Arabic support',
-  keywords: ['gold', 'calculator', 'prices', 'BTC', 'Egypt', 'Arabic'],
+  title: 'BTC Gold Calculator | حاسبة الذهب - أسعار الذهب في مصر',
+  description: 'احسب أسعار الذهب في مصر بدقة. حاسبة الذهب الاحترافية بأسعار لحظية لعيار 21 و18 و24. Calculate live gold prices in Egypt with Arabic and English support.',
+  keywords: [
+    'gold calculator', 'حاسبة الذهب', 'أسعار الذهب', 'gold prices Egypt',
+    'سعر الذهب مصر', 'عيار 21', 'عيار 18', 'كيلو ذهب', 'gold ingots',
+    'BTC gold', 'gold price calculator', 'سعر الذهب اليوم',
+  ],
   manifest: '/manifest.json',
+  metadataBase: new URL('https://gold.tarekragab.com'),
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    title: 'BTC Gold Calculator | حاسبة الذهب',
+    description: 'احسب أسعار الذهب في مصر بدقة. Calculate live gold prices in Egypt with Arabic and English support.',
+    url: 'https://gold.tarekragab.com/',
+    siteName: 'BTC Gold Calculator',
+    locale: 'ar_EG',
+    alternateLocale: 'en_US',
+    type: 'website',
+    images: [
+      {
+        url: '/logo.png',
+        width: 512,
+        height: 512,
+        alt: 'BTC Gold Calculator',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary',
+    title: 'BTC Gold Calculator | حاسبة الذهب',
+    description: 'احسب أسعار الذهب في مصر بدقة. Calculate live gold prices in Egypt.',
+    images: ['/logo.png'],
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
+    title: 'Gold Calc',
   },
   icons: {
     icon: '/logo.png',
     apple: '/logo.png',
+    shortcut: '/logo.png',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+    },
   },
 };
 
