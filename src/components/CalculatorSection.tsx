@@ -210,7 +210,16 @@ export default function CalculatorSection({
 
         {/* Auto fee */}
         <div className="input-group">
-          <label>{ar ? 'رسوم تلقائية' : 'Auto Fee'}</label>
+          <label>
+            {ar ? 'رسوم تلقائية' : 'Auto Fee'}
+            <span
+              className="help-icon"
+              title={ar ? 'الرسوم محسوبة تلقائياً بناءً على عيار الذهب المختار. يمكنك تخصيص رسوم عيار ١٨ يدوياً.' : 'Fee is auto-calculated based on gold karat. You can override the 18K fee manually.'}
+              aria-label={ar ? 'معلومات عن الرسوم التلقائية' : 'Info about auto fee'}
+            >
+              <i className="fas fa-info-circle" aria-hidden="true" />
+            </span>
+          </label>
           <div className="fee-display" id="autoFeeDisplay" aria-live="polite">
             <span className="fee-value">{autoFeeLabel}</span>
             <small className="fee-note">
@@ -221,11 +230,19 @@ export default function CalculatorSection({
 
         {/* Actions */}
         <div className="calc-actions">
-          <button className="calculate-btn" onClick={onCalculate}>
+          <button
+            className="calculate-btn"
+            onClick={onCalculate}
+            title={ar ? 'احسب قيمة الذهب بناءً على المدخلات' : 'Calculate gold value based on your inputs'}
+          >
             <i className="fas fa-calculator" />
             <span>{ar ? 'احسب' : 'Calculate'}</span>
           </button>
-          <button className="calculate-btn secondary" onClick={onSave}>
+          <button
+            className="calculate-btn secondary"
+            onClick={onSave}
+            title={ar ? 'احفظ نتيجة الحساب الحالي في السجل' : 'Save the current calculation result to history'}
+          >
             <i className="fas fa-bookmark" />
             <span>{ar ? 'حفظ' : 'Save'}</span>
           </button>
