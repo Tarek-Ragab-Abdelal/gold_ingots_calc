@@ -62,7 +62,7 @@ export default function AppFooter({ language }: Readonly<Props>) {
           target="_blank"
           rel="noopener noreferrer"
         >
-          <i className="fab fa-upwork" aria-hidden="true" />
+          <i className="fas fa-briefcase" aria-hidden="true" />
           <span>Upwork</span>
         </a>
         <a
