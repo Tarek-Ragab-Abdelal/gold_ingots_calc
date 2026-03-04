@@ -1172,84 +1172,128 @@ select:focus:not(:focus-visible) { outline: none; }
 .prices-refreshing i { font-size: 0.7rem; flex-shrink: 0; }
 
 /* =====================================================
-   Desktop Layout — two-column sidebar (≥ 1024 px)
+   Mobile defaults for new layout elements
+   ===================================================== */
+
+/* Desktop-only price banner — hidden on mobile */
+.desktop-prices { display: none; }
+
+/* =====================================================
+   Desktop Layout — centered dashboard (≥ 1024 px)
    ===================================================== */
 @media (min-width: 1024px) {
 
-  /* ── outer grid ── */
+  /* ── centered app shell ── */
   .app-layout {
-    display: grid;
-    grid-template-columns: 300px 1fr;
-    min-height: 100vh;
-    max-width: 1400px;
+    max-width: 880px;
     margin: 0 auto;
+    min-height: 100vh;
   }
 
-  /* ── sidebar (was the mobile header) ── */
+  /* ── Header → horizontal navbar ── */
   .app-header {
-    border-radius: 0 var(--radius-xl) var(--radius-xl) 0;
+    border-radius: 0 0 var(--radius-xl) var(--radius-xl);
     margin-bottom: 0;
     position: sticky;
     top: 0;
-    height: 100vh;
-    overflow-y: auto;
+    z-index: 100;
+    height: auto;
+    overflow: visible;
     display: flex;
-    flex-direction: column;
-    padding:
-      var(--space-32)
-      var(--space-24)
-      var(--space-32)
-      var(--space-24);
-  }
-
-  /* Spread market cards to fill vertical space nicely */
-  .market-overview.compact {
-    grid-template-columns: 1fr;  /* stack cards in the narrow sidebar */
-    gap: var(--space-8);
-    margin-top: var(--space-20);
-  }
-
-  /* Price card in sidebar: horizontal layout (label left, price right) */
-  .price-card {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    padding: var(--space-14) var(--space-16);
+    padding: var(--space-14) var(--space-32);
+    gap: var(--space-16);
   }
 
-  .price-card .card-left {
+  /* Hide price cards inside the header on desktop */
+  .header-prices { display: none; }
+
+  /* Show the desktop price banner */
+  .desktop-prices { display: block; }
+
+  /* Title adjustments for horizontal navbar */
+  .title-row {
+    margin-bottom: 0;
+    flex-shrink: 0;
+  }
+  .title-left h1        { font-size: 1.25rem; }
+  .title-left .subtitle { font-size: 0.75rem; margin-top: var(--space-2); }
+
+  /* ── Desktop price banner ── */
+  .desktop-prices .market-overview.compact {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-12);
+    margin-top: 0;
+    background: linear-gradient(145deg, #1C1917 0%, #292524 55%, #3D1F09 100%);
+    padding: var(--space-16) var(--space-20);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+  }
+
+  [data-theme="dark"] .desktop-prices .market-overview.compact {
+    background: linear-gradient(145deg, #080C10 0%, #0D1117 55%, #180E00 100%);
+  }
+
+  .desktop-prices .price-card {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-12) var(--space-16);
+  }
+
+  .desktop-prices .price-card .card-left {
     flex-direction: column;
     align-items: flex-start;
     gap: var(--space-2);
   }
 
-  .card-right { align-items: flex-end; }
+  .desktop-prices .card-right { align-items: flex-end; }
 
-  /* Header title/subtitle sizes on desktop */
-  .title-left h1        { font-size: 1.45rem; }
-  .title-left .subtitle { font-size: 0.8rem; }
+  .desktop-prices .exchange-rate-info,
+  .desktop-prices .api-warning {
+    margin-top: var(--space-12);
+  }
 
-  /* Spacing after exchange-rate strip */
-  .exchange-rate-info,
-  .api-warning { margin-top: var(--space-12); }
+  .desktop-prices .prices-refreshing {
+    margin-top: var(--space-8);
+  }
 
-  /* ── main content area ── */
+  /* ── Main content area ── */
   .container {
-    padding: var(--space-32) var(--space-32) var(--space-32);
+    padding: var(--space-24) var(--space-32) var(--space-32);
     max-width: none;
   }
 
   main { gap: var(--space-20); }
 
-  /* Quick-actions bar: space out buttons on wide screens */
+  /* Quick-actions bar */
   .quick-actions {
     grid-template-columns: 1fr 1fr 1fr;
   }
 
-  /* Calculator section: slightly wider form fields */
+  /* Calculator form: two-column inputs */
   .input-row { grid-template-columns: 1fr 1fr; }
 
-  /* Footer: horizontal layout on desktop */
+  /* Result card: buy/sell sections side by side */
+  .result-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-16);
+  }
+
+  /* Info rows above sections span full width */
+  .result-details > .result-row {
+    grid-column: 1 / -1;
+  }
+
+  /* Breakdown table spans full width */
+  .result-details > .breakdown-section {
+    grid-column: 1 / -1;
+  }
+
+  /* Footer: horizontal */
   .app-footer {
     display: flex;
     flex-direction: row;
@@ -1276,29 +1320,17 @@ select:focus:not(:focus-visible) { outline: none; }
   [dir="rtl"] .footer-info { text-align: start; }
 }
 
-/* ── RTL mirror for desktop sidebar ── */
-[dir="rtl"] .app-layout {
-  grid-template-columns: 1fr 300px;
-}
-
-[dir="rtl"] .app-header {
-  border-radius: var(--radius-xl) 0 0 var(--radius-xl);
-  order: 2;
-}
-
-[dir="rtl"] .container { order: 1; }
-
-/* ── Very wide screens (≥ 1400 px): add outer padding so content doesn't
-   touch the browser edge when the 1400 px max-width is reached ── */
-@media (min-width: 1400px) {
+/* ── Wide screens (≥ 900 px): floating card effect ── */
+@media (min-width: 900px) {
   body {
     background: var(--bg-secondary);
   }
 
   .app-layout {
-    box-shadow: 0 0 60px rgba(0, 0, 0, 0.18);
+    box-shadow: 0 0 60px rgba(0, 0, 0, 0.15);
     border-radius: 0 0 var(--radius-xl) var(--radius-xl);
     overflow: hidden;
+    background: var(--bg);
   }
 }
 

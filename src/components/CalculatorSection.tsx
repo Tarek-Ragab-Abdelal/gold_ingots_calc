@@ -1,6 +1,5 @@
-import type { GoldProduct, CalculationResult, Language } from '@/lib/types';
+import type { GoldProduct, Language } from '@/lib/types';
 import type { LocalizationService } from '@/lib/localization';
-import ResultCard from './ResultCard';
 
 // ── helpers ───────────────────────────────────────────────────
 function detectKarat(productId: string) {
@@ -118,7 +117,6 @@ interface Props {
   preference: 'pieces' | 'grams';
   custom18kFee: string;
   autoFeeLabel: string;
-  result: CalculationResult | null;
   onCalcTypeChange: (v: 'goldToMoney' | 'moneyToGold') => void;
   onSelectedProductChange: (v: string) => void;
   onQuantityChange: (v: string) => void;
@@ -128,16 +126,15 @@ interface Props {
   onCustom18kFeeChange: (v: string) => void;
   onCalculate: () => void;
   onSave: () => void;
-  onCopyResult: () => void;
 }
 
 export default function CalculatorSection({
   language, goldPrices, loc,
   calcType, selectedProduct, quantity, weightPerPiece,
-  moneyAmount, preference, custom18kFee, autoFeeLabel, result,
+  moneyAmount, preference, custom18kFee, autoFeeLabel,
   onCalcTypeChange, onSelectedProductChange, onQuantityChange,
   onWeightPerPieceChange, onMoneyAmountChange, onPreferenceChange,
-  onCustom18kFeeChange, onCalculate, onSave, onCopyResult,
+  onCustom18kFeeChange, onCalculate, onSave,
 }: Readonly<Props>) {
   const ar    = language === 'ar';
   const karat = detectKarat(selectedProduct);
@@ -235,7 +232,6 @@ export default function CalculatorSection({
         </div>
       </div>
 
-      {result && <ResultCard result={result} language={language} loc={loc} onCopy={onCopyResult} />}
     </section>
   );
 }

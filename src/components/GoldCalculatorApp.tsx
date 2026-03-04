@@ -4,6 +4,8 @@ import { useGoldCalculator } from '@/hooks/useGoldCalculator';
 import AppHeader from './AppHeader';
 import QuickActions from './QuickActions';
 import CalculatorSection from './CalculatorSection';
+import ResultCard from './ResultCard';
+import PriceCards from './PriceCards';
 import HistoryModal from './HistoryModal';
 import AppFooter from './AppFooter';
 
@@ -12,7 +14,7 @@ export default function GoldCalculatorApp() {
 
   return (
     <div className="app-layout">
-      {/* ── Header / desktop sidebar ── */}
+      {/* ── Header / desktop navbar ── */}
       <AppHeader
         language={s.language}
         theme={s.theme}
@@ -40,6 +42,19 @@ export default function GoldCalculatorApp() {
             </div>
           )}
 
+          {/* Desktop-only price banner (hidden on mobile via CSS) */}
+          <div className="desktop-prices">
+            <PriceCards
+              language={s.language}
+              goldPrices={s.goldPrices}
+              exchangeRate={s.exchangeRate}
+              showApiWarning={s.showApiWarning}
+              isFetchingFresh={s.isFetchingFresh}
+              loc={s.loc}
+              onRefreshExchangeRate={s.refreshExchangeRate}
+            />
+          </div>
+
           <QuickActions
             language={s.language}
             loading={s.loading}
@@ -60,7 +75,6 @@ export default function GoldCalculatorApp() {
             preference={s.preference}
             custom18kFee={s.custom18kFee}
             autoFeeLabel={s.autoFeeLabel}
-            result={s.result}
             onCalcTypeChange={s.setCalcType}
             onSelectedProductChange={s.setSelectedProduct}
             onQuantityChange={s.setQuantity}
@@ -70,8 +84,16 @@ export default function GoldCalculatorApp() {
             onCustom18kFeeChange={s.setCustom18kFee}
             onCalculate={s.calculate}
             onSave={s.saveResult}
-            onCopyResult={s.copyResult}
           />
+
+          {s.result && (
+            <ResultCard
+              result={s.result}
+              language={s.language}
+              loc={s.loc}
+              onCopy={s.copyResult}
+            />
+          )}
 
           <AppFooter language={s.language} />
         </main>
