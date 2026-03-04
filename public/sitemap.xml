@@ -10,4 +10,22 @@
     <xhtml:link rel="alternate" hreflang="ar" href="https://gold.tarekragab.com/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gold.tarekragab.com/"/>
   </url>
+  <url>
+    <loc>https://gold.tarekragab.com/guide</loc>
+    <lastmod>2026-03-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://gold.tarekragab.com/guide"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://gold.tarekragab.com/guide"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://gold.tarekragab.com/guide"/>
+  </url>
+  <url>
+    <loc>https://gold.tarekragab.com/about</loc>
+    <lastmod>2026-03-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://gold.tarekragab.com/about"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://gold.tarekragab.com/about"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://gold.tarekragab.com/about"/>
+  </url>
 </urlset>

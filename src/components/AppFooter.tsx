@@ -42,6 +42,42 @@ export default function AppFooter({ language }: Readonly<Props>) {
         </a>
       </div>
 
+      <div className="footer-social">
+        <a
+          href="https://www.linkedin.com/in/tarek-ragab/"
+          className="social-link"
+          aria-label={ar ? 'لينكد إن' : 'LinkedIn'}
+          title="LinkedIn"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <i className="fab fa-linkedin" aria-hidden="true" />
+          <span>LinkedIn</span>
+        </a>
+        <a
+          href="https://www.upwork.com/freelancers/~01f068ac7a77a08223"
+          className="social-link"
+          aria-label={ar ? 'أبورك' : 'Upwork'}
+          title="Upwork"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <i className="fab fa-upwork" aria-hidden="true" />
+          <span>Upwork</span>
+        </a>
+        <a
+          href="https://github.com/Tarek-Ragab-Abdelal"
+          className="social-link"
+          aria-label="GitHub"
+          title="GitHub"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <i className="fab fa-github" aria-hidden="true" />
+          <span>GitHub</span>
+        </a>
+      </div>
+
       <div className="footer-info">
         <p>
           {ar
@@ -51,12 +87,20 @@ export default function AppFooter({ language }: Readonly<Props>) {
         <p>
           {ar ? 'بواسطة ' : 'Created by '}
           <a
-            href="https://TarekRagab.com"
+            href="https://tarekragab.com"
             target="_blank"
             rel="noopener noreferrer"
-            aria-label="Tarek Ragab (opens in new tab)"
+            aria-label="Tarek Ragab portfolio (opens in new tab)"
           >
             Tarek Ragab
+          </a>
+          {' · '}
+          <a href="/about" aria-label={ar ? 'عن المطور' : 'About the developer'}>
+            {ar ? 'عن المطور' : 'About'}
+          </a>
+          {' · '}
+          <a href="/guide" aria-label={ar ? 'دليل الاستخدام' : 'How to use guide'}>
+            {ar ? 'دليل الاستخدام' : 'Guide'}
           </a>
         </p>
         <p className="disclaimer">

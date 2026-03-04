@@ -40,11 +40,22 @@ export default function AppHeader({
           </p>
         </div>
 
+        <nav className="header-nav" aria-label={ar ? 'روابط التنقل' : 'Navigation links'}>
+          <a href="/guide" className="nav-link" title={ar ? 'دليل الاستخدام' : 'How to use'}>
+            <i className="fas fa-book-open" aria-hidden="true" />
+            <span className="nav-link-text">{ar ? 'الدليل' : 'Guide'}</span>
+          </a>
+          <a href="/about" className="nav-link" title={ar ? 'عن المطور' : 'About the developer'}>
+            <i className="fas fa-user-circle" aria-hidden="true" />
+            <span className="nav-link-text">{ar ? 'عن المطور' : 'About'}</span>
+          </a>
+        </nav>
+
         <div className="title-actions">
           <button
             className="icon-btn"
             onClick={onToggleLanguage}
-            title="Toggle Language"
+            title={ar ? 'تغيير اللغة' : 'Toggle Language'}
             aria-label="Toggle language"
           >
             <i className="fas fa-language" />
@@ -52,7 +63,7 @@ export default function AppHeader({
           <button
             className="icon-btn"
             onClick={onToggleTheme}
-            title="Toggle theme"
+            title={ar ? 'تغيير المظهر' : 'Toggle theme'}
             aria-label="Toggle theme"
           >
             <i className={`fas ${theme === 'dark' ? 'fa-sun' : 'fa-moon'}`} />
