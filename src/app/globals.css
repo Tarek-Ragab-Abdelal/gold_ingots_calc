@@ -176,7 +176,7 @@ img { max-width: 100%; display: block; }
   letter-spacing: 0.01em;
 }
 
-[dir="rtl"] .title-left { text-align: right; }
+[dir="rtl"] .title-left { text-align: end; }
 
 .title-actions {
   display: flex;
@@ -288,7 +288,7 @@ img { max-width: 100%; display: block; }
   font-weight: 500;
   white-space: nowrap;
   flex-shrink: 0;
-  text-align: right;
+  text-align: end;
 }
 
 /* --------------------------------------------------
@@ -1136,7 +1136,7 @@ select:focus:not(:focus-visible) { outline: none; }
 .breakdown-item:last-child { border-bottom: none; }
 
 .breakdown-product { font-weight: 600; }
-.breakdown-details { text-align: right; font-size: 0.78rem; opacity: 0.8; }
+.breakdown-details { text-align: end; font-size: 0.78rem; opacity: 0.8; }
 .breakdown-cost    { font-weight: 700; color: #6EE7B7; }
 
 /* Breakdown table */
@@ -1152,13 +1152,11 @@ select:focus:not(:focus-visible) { outline: none; }
 
 .breakdown-table th {
   padding: var(--space-8) var(--space-6);
-  text-align: left;
+  text-align: start;
   font-weight: 700;
   font-size: 0.76rem;
   color: #A7F3D0;
 }
-
-[dir="rtl"] .breakdown-table th { text-align: right; }
 
 .breakdown-table td {
   padding: var(--space-8) var(--space-6);
@@ -1222,36 +1220,56 @@ select:focus:not(:focus-visible) { outline: none; }
     min-height: 100vh;
   }
 
-  /* ── Header → horizontal navbar ── */
+  /* ── Header → slim sticky navbar ── */
   .app-header {
-    border-radius: 0 0 var(--radius-xl) var(--radius-xl);
-    margin-bottom: 0;
     position: sticky;
     top: 0;
     z-index: 100;
     height: auto;
     overflow: visible;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    padding: var(--space-14) var(--space-32);
-    gap: var(--space-16);
+    padding: 0;
+    margin-bottom: 0;
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
   }
 
   /* Hide price cards inside the header on desktop */
   .header-prices { display: none; }
 
-  /* Show the desktop price banner */
+  /* Show the desktop price banner below */
   .desktop-prices { display: block; }
 
-  /* Title adjustments for horizontal navbar */
+  /* Title row becomes the full navbar */
   .title-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-20);
     margin-bottom: 0;
+    padding: var(--space-12) var(--space-24);
+  }
+
+  /* Title: compact, no subtitle */
+  .title-left {
     flex-shrink: 0;
   }
-  .title-left h1        { font-size: 1.25rem; }
-  .title-left .subtitle { font-size: 0.75rem; margin-top: var(--space-2); }
+
+  .title-left h1 {
+    font-size: 1.15rem;
+    letter-spacing: -0.01em;
+  }
+
+  .title-left .subtitle { display: none; }
+
+  /* Nav links: fill the middle space */
+  .header-nav { flex: 1; }
+
+  /* Action buttons: stay right */
+  .title-actions { flex-shrink: 0; }
+
+  .icon-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 0.9rem;
+  }
 
   /* ── Desktop price banner ── */
   .desktop-prices .market-overview.compact {
@@ -1325,31 +1343,15 @@ select:focus:not(:focus-visible) { outline: none; }
     grid-column: 1 / -1;
   }
 
-  /* Footer: horizontal */
+  /* Footer: keep centered and compact on desktop */
   .app-footer {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-24);
-    text-align: start;
+    text-align: center;
+    padding: var(--space-24) var(--space-32);
   }
 
-  [dir="rtl"] .app-footer { text-align: end; }
-
-  .app-footer h3 { margin: 0; white-space: nowrap; }
-
-  .support-buttons {
-    margin-bottom: 0;
-    flex-wrap: nowrap;
+  .footer-social {
+    gap: var(--space-16);
   }
-
-  .footer-info {
-    text-align: end;
-    flex: 1;
-  }
-
-  [dir="rtl"] .footer-info { text-align: start; }
 }
 
 /* ── Wide screens (≥ 900 px): floating card effect ── */
@@ -1399,7 +1401,7 @@ select:focus:not(:focus-visible) { outline: none; }
   gap: var(--space-6);
   padding: var(--space-6) var(--space-12);
   border-radius: var(--radius-sm);
-  color: var(--text-2);
+  color: rgba(255,255,255,0.78);
   text-decoration: none;
   font-size: 0.8rem;
   font-weight: 600;
@@ -1408,9 +1410,9 @@ select:focus:not(:focus-visible) { outline: none; }
 }
 
 .nav-link:hover {
-  background: var(--surface-2);
-  border-color: var(--border);
-  color: var(--text);
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.15);
+  color: #fff;
 }
 
 .nav-link i { font-size: 0.9rem; }
@@ -1633,15 +1635,20 @@ select:focus:not(:focus-visible) { outline: none; }
 .about-profile {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
 }
 
 .about-avatar {
-  font-size: 4rem;
-  color: var(--primary);
   margin-bottom: var(--space-12);
-  line-height: 1;
+  flex-shrink: 0;
+}
+
+.about-avatar img {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--primary);
+  box-shadow: var(--shadow-md);
 }
 
 .about-title {
@@ -1754,13 +1761,68 @@ select:focus:not(:focus-visible) { outline: none; }
 @media (min-width: 768px) {
   .about-profile {
     flex-direction: row;
-    text-align: start;
-    align-items: flex-start;
     gap: var(--space-24);
   }
 
-  [dir="rtl"] .about-profile { text-align: end; }
+  /* Let the name & description fill the remaining width */
+  .about-profile .info-article-header {
+    flex: 0.3;
+    min-width: 0;
+  }
+
+  .about-profile .info-article-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .about-profile .about-title {
+    font-size: 0.92rem;
+  }
+
+  .about-profile .info-article-intro {
+    flex: 1;
+    min-width: 0;
+  }
+
+  [dir="rtl"] .about-profile { text-align: start; }
 
   .about-avatar { margin-bottom: 0; }
+
+  /* Two-column features list */
+  .about-features {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-12);
+  }
+
+  /* Three-column social links */
+  .social-links-grid {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  /* Larger article padding */
+  .info-article {
+    padding: var(--space-32) var(--space-32);
+  }
+
+  .info-article-header h2 {
+    font-size: 1.35rem;
+  }
+
+  /* Back link styling for desktop — more visible */
+  .back-link {
+    font-size: 0.82rem;
+    padding: var(--space-4) var(--space-8);
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--space-8);
+  }
+
+  .back-link:hover {
+    background: rgba(255,255,255,0.1);
+  }
+
+  /* Info page footer — centered, comfortable */
+  .info-page-footer {
+    padding: var(--space-24) var(--space-32);
+  }
 }
 

@@ -34,3 +34,5 @@ tsconfig.tsbuildinfo
 
 # ESLint config (auto-generated)
 .eslintrc.json
+temp_auto_push.bat
+temp_interactive_push.bat
